@@ -28,6 +28,21 @@ public class SearchAlgorithms
             depthFirst(p, rule.applyToState(currentState), isResolved);
     }
     
+    public static boolean depthFirstRec (Problem p, Object state) {
+        System.out.println(state);
+        if (p.isResolved(state)) {
+            System.out.println("Bingo");
+            return true;
+        }
+        List <Rule> rules = p.getRules(state);
+        for (Rule rule : rules) {
+            if (depthFirstRec(p, rule.applyToState(state)))
+                return true;
+        }
+        
+        return false;           
+    }
+    
     public void breadthFirst(Problem p)
     {
         Queue<Object> queue = new LinkedList<Object>();

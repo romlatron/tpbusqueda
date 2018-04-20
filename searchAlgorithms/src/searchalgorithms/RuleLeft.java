@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Acer
  */
-public class ruleRight <E extends Object> implements Rule {
+public class RuleLeft <E extends Object> implements Rule {
 
     double cost = 1;
     
@@ -30,16 +30,16 @@ public class ruleRight <E extends Object> implements Rule {
     public Object applyToState(Object e) {
         State s = (State) e;
         List <Rule> goLeftRight = new ArrayList<>();
-        goLeftRight.add(new ruleLeft());
-        goLeftRight.add(new ruleRight());
+        goLeftRight.add(new RuleLeft());
+        goLeftRight.add(new RuleRight());
         switch (s.num) {
-            case 1 : return new State (3, goLeftRight);
-            case 2 : return new State (5, new ArrayList<>());
-            case 3 : return new State (7, new ArrayList<>());
+            case 1 : return new State (2, goLeftRight);
+            case 2 : return new State (4, new ArrayList<>());
+            case 3 : return new State (6, new ArrayList<>());
         }
         return null;
     }
     
-    public ruleRight () {}
+    public RuleLeft () {}
     
 }
