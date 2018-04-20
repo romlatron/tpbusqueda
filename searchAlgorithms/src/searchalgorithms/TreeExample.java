@@ -12,29 +12,29 @@ import java.util.List;
  * @author Acer
  * @param <E>
  */
-public class Tree <E extends Object> implements Problem {
+public class TreeExample <E extends Object> implements Problem {
 
-    public State initialState;
-    public State finalState;
+    public TreeState initialState;
+    public TreeState finalState;
     
     @Override
-    public State getInitialState(){
+    public TreeState getInitialState(){
         return this.initialState;
     }
 
     @Override
     public List getRules(Object e) {
-        State s = (State) e;
+        TreeState s = (TreeState) e;
         return s.rules;
     }
 
     @Override
     public boolean isResolved(Object e) {
-        State s = (State) e;
+        TreeState s = (TreeState) e;
         return s.num==finalState.num;
     }
     
-    public Tree (State initialState, State finalState) {
+    public TreeExample (TreeState initialState, TreeState finalState) {
         this.initialState = initialState;
         this.finalState = finalState;
     }

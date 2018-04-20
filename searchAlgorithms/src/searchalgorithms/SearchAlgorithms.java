@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package searchalgorithms;
+
 import ar.com.itba.sia.Problem;
 import ar.com.itba.sia.Rule;
 import java.util.LinkedList;
@@ -17,18 +18,7 @@ import java.util.Queue;
  */
 public class SearchAlgorithms
 {
-    public void depthFirst(Problem p, Object currentState, boolean isResolved)
-    {
-        isResolved = p.isResolved(currentState);
-        if (isResolved)
-            return;
-        
-        List<Rule<Object>>rules = p.getRules(currentState);
-        for (Rule<Object> rule : rules)
-            depthFirst(p, rule.applyToState(currentState), isResolved);
-    }
-    
-    public static boolean depthFirstRec (Problem p, Object state) {
+    public static boolean depthFirst (Problem p, Object state) {
         System.out.println(state);
         if (p.isResolved(state)) {
             System.out.println("Bingo");
@@ -36,7 +26,7 @@ public class SearchAlgorithms
         }
         List <Rule> rules = p.getRules(state);
         for (Rule rule : rules) {
-            if (depthFirstRec(p, rule.applyToState(state)))
+            if (depthFirst(p, rule.applyToState(state)))
                 return true;
         }
         
@@ -57,6 +47,35 @@ public class SearchAlgorithms
             for (Rule<Object> rule : rules)
                 queue.add(rule.applyToState(tmpObj));   
         }
+        
+        if (p.isResolved(queue.element()))
+            System.out.println(queue.element());
     }
     
+    public static void iterativeDeepening (Problem p) {
+        Object actualState = p.getInitialState();
+        int maxDepth = 1;
+        while ( !depthFirstLim(p, actualState, maxDepth) ) {
+            maxDepth ++;
+        }
+            
+    }
+    
+    //recursive algorithm used by iterative deepening
+    public static boolean depthFirstLim (Problem p, Object state, int limite) {
+        if (limite == 0)
+            return false;
+        System.out.println(state);
+        if (p.isResolved(state)) {
+            System.out.println("Bingo");
+            return true;
+        }
+        List <Rule> rules = p.getRules(state);
+        for (Rule rule : rules) {
+            if (depthFirstLim(p, rule.applyToState(state), limite - 1))
+                return true;
+        }
+        
+        return false;           
+    }
 }
