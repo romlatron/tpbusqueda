@@ -21,13 +21,13 @@ public class MainClass {
     public static void main(String[] args) {
         // TODO code application logic here
         List <Rule> goLeftRight = new ArrayList<>();
-        goLeftRight.add(new ruleLeft());
-        goLeftRight.add(new ruleRight());
+        goLeftRight.add(new RuleLeft());
+        goLeftRight.add(new RuleRight());
         State init = new State (1, goLeftRight);
         State fin = new State (6, goLeftRight);
         Tree tree = new Tree (init, fin);
         
-        depthFirstRec (tree, tree.getInitialState());
+        SearchAlgorithms.breadthFirst (tree);
     }
     
 }

@@ -43,7 +43,7 @@ public class SearchAlgorithms
         return false;           
     }
     
-    public void breadthFirst(Problem p)
+    public static void breadthFirst(Problem p)
     {
         Queue<Object> queue = new LinkedList<Object>();
         queue.add(p.getInitialState());
