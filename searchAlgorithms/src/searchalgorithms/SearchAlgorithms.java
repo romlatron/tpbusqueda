@@ -52,6 +52,35 @@ public class SearchAlgorithms
             System.out.println(queue.element());
     }
     
+    public static void greedySearch(Problem p)
+    {
+        Object currentState  = p.getInitialState();
+        Object nextState;
+        double minRuleCost;
+        
+        while(!p.isResolved(currentState))
+        {
+            List<Rule<Object>> rules = p.getRules(currentState);
+            minRuleCost = rules.get(0).getCost();
+            nextState = rules.get(0).applyToState(currentState);
+            
+            for (Rule<Object> rule : rules)
+            {
+                if (rule.getCost() < minRuleCost)
+                {
+                    minRuleCost = rule.getCost();
+                    nextState = rule.applyToState(currentState);
+                }
+            }
+            currentState = nextState;
+        }
+    }
+    
+    public static void Astar(Problem p)
+    {
+        
+    }
+        
     public static void iterativeDeepening (Problem p) {
         Object actualState = p.getInitialState();
         int maxDepth = 1;

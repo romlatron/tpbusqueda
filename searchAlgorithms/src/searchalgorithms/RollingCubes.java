@@ -5,7 +5,6 @@
  */
 package searchalgorithms;
 
-import treetest.TreeState;
 import ar.com.itba.sia.Rule;
 import ar.com.itba.sia.Problem;
 import java.util.List;
@@ -23,7 +22,7 @@ public class RollingCubes implements Problem {
     }
 
     @Override
-    public List getRules(Object e) {
+    public List <Rule> getRules(Object e) {
         State s = (State) e;
         return s.rules;
     }
@@ -32,7 +31,7 @@ public class RollingCubes implements Problem {
     public boolean isResolved(Object e) {
         State s = (State) e;
         for (Cube cube : s.board) {
-            if (cube.currentColor != Cube.color.WHITE && cube.currentColor != Cube.color.EMPTY)
+            if (cube.getCurrentColor() != Cube.color.WHITE && cube.getCurrentColor() != Cube.color.EMPTY)
                 return false;
         }
         return true;
@@ -41,8 +40,8 @@ public class RollingCubes implements Problem {
     public RollingCubes () {
         State init = new State();
         for (int i=0; i<9; i++)
-            if (i != 4) init.board[i].setColor(Cube.color.BLACK);
-        init.board[4].setColor(Cube.color.EMPTY);
+            if (i != 4) init.board[i].setCurrentColor(Cube.color.BLACK);
+        init.board[4].setCurrentColor(Cube.color.EMPTY);
         this.initialState = init;
     }
 }
