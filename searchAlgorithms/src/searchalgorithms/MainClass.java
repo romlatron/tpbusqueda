@@ -22,14 +22,14 @@ public class MainClass {
         // TODO code application logic here
         
         List <Rule> goLeftRight = new ArrayList<>();
-        goLeftRight.add(new RuleLeft());
-        goLeftRight.add(new RuleRight());
-        State init = new State (1, goLeftRight);
-        State fin = new State (6, goLeftRight);
-        Tree tree = new Tree (init, fin);
+        goLeftRight.add(new TreeRuleLeft());
+        goLeftRight.add(new TreeRuleRight());
+        TreeState init = new TreeState (1, goLeftRight);
+        TreeState fin = new TreeState (6, goLeftRight);
+        TreeExample tree = new TreeExample (init, fin);
         
-        //SearchAlgorithms.depthFirstRec(tree, tree.getInitialState());
-        //SearchAlgorithms.breadthFirst(tree);
+        SearchAlgorithms.iterativeDeepening (tree);
+
     }
     
 }

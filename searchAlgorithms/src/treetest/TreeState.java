@@ -11,14 +11,14 @@ import ar.com.itba.sia.*;
  *
  * @author Acer
  */
-public class State {
+public class TreeState {
 
     int num;
     List<Rule> rules;
     
-    public State() {}
+    public TreeState() {}
     
-    public State (int num, List rules) {
+    public TreeState (int num, List rules) {
         this.num = num;
         this.rules = rules;
     }

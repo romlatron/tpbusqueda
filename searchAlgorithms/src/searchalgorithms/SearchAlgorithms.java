@@ -80,4 +80,31 @@ public class SearchAlgorithms
     {
         
     }
+        
+    public static void iterativeDeepening (Problem p) {
+        Object actualState = p.getInitialState();
+        int maxDepth = 1;
+        while ( !depthFirstLim(p, actualState, maxDepth) ) {
+            maxDepth ++;
+        }
+            
+    }
+    
+    //recursive algorithm used by iterative deepening
+    public static boolean depthFirstLim (Problem p, Object state, int limite) {
+        if (limite == 0)
+            return false;
+        System.out.println(state);
+        if (p.isResolved(state)) {
+            System.out.println("Bingo");
+            return true;
+        }
+        List <Rule> rules = p.getRules(state);
+        for (Rule rule : rules) {
+            if (depthFirstLim(p, rule.applyToState(state), limite - 1))
+                return true;
+        }
+        
+        return false;           
+    }
 }

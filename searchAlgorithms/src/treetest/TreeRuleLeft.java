@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author Acer
  */
-public class RuleLeft <E extends Object> implements Rule {
+public class TreeRuleLeft <E extends Object> implements Rule {
 
     double cost = 1;
     
@@ -29,18 +29,18 @@ public class RuleLeft <E extends Object> implements Rule {
 
     @Override
     public Object applyToState(Object e) {
-        State s = (State) e;
+        TreeState s = (TreeState) e;
         List <Rule> goLeftRight = new ArrayList<>();
-        goLeftRight.add(new RuleLeft());
-        goLeftRight.add(new RuleRight());
+        goLeftRight.add(new TreeRuleLeft());
+        goLeftRight.add(new TreeRuleRight());
         switch (s.num) {
-            case 1 : return new State (2, goLeftRight);
-            case 2 : return new State (4, new ArrayList<>());
-            case 3 : return new State (6, new ArrayList<>());
+            case 1 : return new TreeState (2, goLeftRight);
+            case 2 : return new TreeState (4, new ArrayList<>());
+            case 3 : return new TreeState (6, new ArrayList<>());
         }
         return null;
     }
     
-    public RuleLeft () {}
+    public TreeRuleLeft () {}
     
 }
