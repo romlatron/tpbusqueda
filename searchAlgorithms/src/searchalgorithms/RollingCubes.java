@@ -3,40 +3,35 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package treetest;
-import ar.com.itba.sia.*;
-import java.util.List;
+package searchalgorithms;
 
+import treetest.TreeState;
+import ar.com.itba.sia.Rule;
+import ar.com.itba.sia.Problem;
+import java.util.List;
 /**
  *
  * @author Acer
- * @param <E>
  */
-public class TreeExample <E extends Object> implements Problem {
-
+public class RollingCubes implements Problem {
+    
     public TreeState initialState;
     public TreeState finalState;
-    
+
     @Override
-    public TreeState getInitialState(){
+    public Object getInitialState() {
         return this.initialState;
     }
 
     @Override
     public List getRules(Object e) {
-        TreeState s = (TreeState) e;
+        State s = (State) e;
         return s.rules;
     }
 
     @Override
     public boolean isResolved(Object e) {
-        TreeState s = (TreeState) e;
-        return s.num==finalState.num;
-    }
-    
-    public TreeExample (TreeState initialState, TreeState finalState) {
-        this.initialState = initialState;
-        this.finalState = finalState;
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
