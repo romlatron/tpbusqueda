@@ -15,4 +15,8 @@ public class State {
     
     public List <Rule> rules;
     public Cube[] board;
+    
+    public State () {
+        
+    }
 }

@@ -10,5 +10,6 @@ package searchalgorithms;
  * @author Acer
  */
 public class Cube {
-    
+    public enum color {WHITE, BLACK, WLEFT, WRIGHT, WUP, WDOWN, EMPTY};
+    public color currentColor;
 }

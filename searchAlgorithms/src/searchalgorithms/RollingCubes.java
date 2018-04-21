@@ -15,8 +15,7 @@ import java.util.List;
  */
 public class RollingCubes implements Problem {
     
-    public TreeState initialState;
-    public TreeState finalState;
+    public State initialState;
 
     @Override
     public Object getInitialState() {
@@ -31,7 +30,19 @@ public class RollingCubes implements Problem {
 
     @Override
     public boolean isResolved(Object e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        State s = (State) e;
+        for (Cube cube : s.board) {
+            if (cube.currentColor != Cube.color.WHITE && cube.currentColor != Cube.color.EMPTY)
+                return false;
+        }
+        return true;
     }
     
+    public RollingCubes () {
+        State init = new State();
+        for (int i=0; i<9; i++)
+            if (i != 4) init.board[i].setColor(Cube.color.BLACK);
+        init.board[4].setColor(Cube.color.EMPTY);
+        this.initialState = init;
+    }
 }
