@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package searchalgorithms;
+package RollingCubes;
 
+import searchalgorithms.*;
 import ar.com.itba.sia.Rule;
 import ar.com.itba.sia.Problem;
+import java.util.ArrayList;
 import java.util.List;
 /**
  *
@@ -24,7 +26,7 @@ public class RollingCubes implements Problem {
     @Override
     public List <Rule> getRules(Object e) {
         State s = (State) e;
-        return s.rules;
+        return s.getRules();
     }
 
     @Override
@@ -38,10 +40,14 @@ public class RollingCubes implements Problem {
     }
     
     public RollingCubes () {
-        State init = new State();
+        List <Rule> initRules = new ArrayList();
+        
+        Cube board[] = new Cube[9];
         for (int i=0; i<9; i++)
-            if (i != 4) init.board[i].setCurrentColor(Cube.color.BLACK);
-        init.board[4].setCurrentColor(Cube.color.EMPTY);
+            if (i != 4) board[i] = new Cube(Cube.color.BLACK);
+        board[4] = new Cube(Cube.color.EMPTY);
+        
+        State init = new State(initRules, board);
         this.initialState = init;
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package searchalgorithms;
+package RollingCubes;
 
 /**
  *
@@ -21,6 +21,4 @@ public class Cube
     public color getCurrentColor() { return currentColor; }
 
     public void setCurrentColor(color currentColor) { this.currentColor = currentColor; }
-    
-    
 }
