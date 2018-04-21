@@ -26,7 +26,7 @@ public class RollingCubes implements Problem {
     @Override
     public List getRules(Object e) {
         State s = (State) e;
-        return s.rules;
+        return s.getRules();
     }
 
     @Override

@@ -13,6 +13,16 @@ import java.util.List;
  */
 public class State {
     
-    public List <Rule> rules;
-    public Cube[] board;
+    private List <Rule> rules;
+    private Cube board[];
+
+    public State(List<Rule> rules, Cube[] board) 
+    {
+        this.rules = rules;
+        this.board = board;
+    }
+
+    public List<Rule> getRules() { return rules; }
+
+    public Cube[] getBoard() { return board; }
 }
