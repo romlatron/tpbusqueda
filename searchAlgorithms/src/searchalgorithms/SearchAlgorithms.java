@@ -5,8 +5,8 @@
  */
 package searchalgorithms;
 
-import ar.com.itba.sia.Problem;
-import ar.com.itba.sia.Rule;
+import ar.com.itba.sia.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -76,9 +76,23 @@ public class SearchAlgorithms
         }
     }
     
-    public static void Astar(Problem p)
+    public static List<Object> Astar(Problem p, Heuristic h)
     {
+        List<Object> bestPath = new ArrayList<Object>();
+        List<Pair> visitedStates = new ArrayList<Pair>();
+        boolean isListModified = true;
         
+        Object initialState = p.getInitialState();
+        double rootAstarCost = h.getValue(initialState);
+        
+        visitedStates.add(new Pair(initialState, rootAstarCost));
+        
+        while(isListModified)
+        {
+            
+        }
+        
+        return bestPath;
     }
         
     public static void iterativeDeepening (Problem p) {
