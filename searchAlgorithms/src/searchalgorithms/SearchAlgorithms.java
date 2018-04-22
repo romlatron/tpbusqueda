@@ -84,7 +84,7 @@ public class SearchAlgorithms
     public static void iterativeDeepening (Problem p) {
         Object actualState = p.getInitialState();
         int maxDepth = 1;
-        while ( !depthFirstLim(p, actualState, maxDepth) ) {
+        while (!depthFirstLim(p, actualState, maxDepth) ) {
             maxDepth ++;
         }
             
