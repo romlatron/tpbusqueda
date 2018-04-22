@@ -13,7 +13,36 @@ public class ClickDown extends RCRule{
 
     @Override
     public Object applyToState(Object e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        State s = (State) e;
+        Cube board[] = s.getBoard();
+        int index = s.getIndexEmpty();
+        Cube empty = board[index];
+        
+        switch (board[index+3].getCurrentColor()) { //index-3 : above cube
+            case WHITE : 
+                board[index].setCurrentColor(Cube.color.WUP);
+                break;
+                
+            case BLACK : 
+                board[index].setCurrentColor(Cube.color.WDOWN);
+                break;
+            
+            case WUP : 
+                board[index].setCurrentColor(Cube.color.BLACK);
+                break;    
+                
+            case WDOWN : 
+                board[index].setCurrentColor(Cube.color.WHITE);
+                break;    
+            
+            default : 
+                board[index].setCurrentColor(board[index+3].getCurrentColor());
+        }
+        board[index+3].setCurrentColor(Cube.color.EMPTY);
+                        
+        State newState = new State(board, index+3);
+        
+        return newState;
     }
     
 }

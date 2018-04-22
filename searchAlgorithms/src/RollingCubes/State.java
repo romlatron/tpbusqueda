@@ -24,7 +24,6 @@ public class State {
         this.indexEmpty = index;
         
         List <Rule> nextPossibleRules = new ArrayList();
-        nextPossibleRules.add(new ClickDown());
         
         if (indexEmpty >= 3) {     
             nextPossibleRules.add(new ClickUp());

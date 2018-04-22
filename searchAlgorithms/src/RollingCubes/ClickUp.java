@@ -44,7 +44,7 @@ public class ClickUp extends RCRule{
         }
         board[index-3].setCurrentColor(Cube.color.EMPTY);
                         
-        State newState = new State (board, index-3);
+        State newState = new State(board, index-3);
         
         return newState;
     }
