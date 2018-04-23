@@ -30,11 +30,11 @@ public class State {
         }
         
         if (indexEmpty <= 5) {     
-            nextPossibleRules.add(new ClickDown());
+            nextPossibleRules.add(new ClickDown());            
         }
                 
         if (indexEmpty != 2 && indexEmpty != 5 && indexEmpty != 8) {
-            nextPossibleRules.add(new ClickRight());
+            nextPossibleRules.add(new ClickRight());            
         }
         
         if (indexEmpty != 0 && indexEmpty != 3 && indexEmpty != 6) {
@@ -49,4 +49,37 @@ public class State {
     public Cube[] getBoard() { return board; }
     
     public int getIndexEmpty() { return indexEmpty; }
+    
+    @Override
+    public String toString () {
+        double count = 0;
+        for (Cube c : this.board)
+        {
+            switch(c.getCurrentColor()) {
+                case WUP :
+                    count += 1;
+                    break;
+                case WDOWN :    
+                    count += 1;
+                    break;
+                case WLEFT :
+                    count += 1;
+                    break;
+                case WRIGHT :
+                    count += 1;
+                    break;
+                    
+                case BLACK :
+                    count += 2;
+                    break;
+                    
+                case WHITE :
+                    break;
+                    
+                case EMPTY :
+                    break;    
+            }
+        }
+        return String.format (count +"");
+    }
 }

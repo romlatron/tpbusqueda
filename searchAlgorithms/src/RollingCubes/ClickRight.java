@@ -14,11 +14,12 @@ public class ClickRight extends RCRule{
     @Override
     public Object applyToState(Object e) {
         State s = (State) e;
-        Cube board[] = s.getBoard();
+        Cube board[] = new Cube[9];
+        for (int i=0; i<9; i++)
+            board[i] = new Cube (s.getBoard()[i].getCurrentColor());
         int index = s.getIndexEmpty();
-        Cube empty = board[index];
         
-        switch (board[index+1].getCurrentColor()) { //index-3 : above cube
+        switch (board[index+1].getCurrentColor()) { 
             case WHITE : 
                 board[index].setCurrentColor(Cube.color.WLEFT);
                 break;
@@ -45,4 +46,5 @@ public class ClickRight extends RCRule{
         return newState;
     }
     
+    public ClickRight() { }
 }

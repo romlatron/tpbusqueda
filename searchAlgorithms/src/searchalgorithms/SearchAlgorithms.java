@@ -43,9 +43,10 @@ public class SearchAlgorithms
             Object tmpObj = queue.poll();
             System.out.println(tmpObj);
             
-            List<Rule<Object>>rules = p.getRules(tmpObj);
-            for (Rule<Object> rule : rules)
-                queue.add(rule.applyToState(tmpObj));   
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules) {
+                queue.add(rule.applyToState(tmpObj));
+            }
         }
         
         if (p.isResolved(queue.element()))
