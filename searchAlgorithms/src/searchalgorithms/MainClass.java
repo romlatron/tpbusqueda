@@ -5,6 +5,7 @@
  */
 package searchalgorithms;
 
+import RollingCubes.RollingCubes;
 import treetest.TreeState;
 import treetest.TreeRuleLeft;
 import treetest.TreeExample;
@@ -25,15 +26,17 @@ public class MainClass {
     public static void main(String[] args) {
         // TODO code application logic here
         
-        List <Rule> goLeftRight = new ArrayList<>();
+        /*List <Rule> goLeftRight = new ArrayList<>();
         goLeftRight.add(new TreeRuleLeft());
         goLeftRight.add(new TreeRuleRight());
         TreeState init = new TreeState (1, goLeftRight);
         TreeState fin = new TreeState (6, goLeftRight);
         TreeExample tree = new TreeExample (init, fin);
         
-        SearchAlgorithms.iterativeDeepening (tree);
+        SearchAlgorithms.iterativeDeepening (tree);*/
 
+        RollingCubes rc = new RollingCubes();
+        System.out.print(rc.getInitialState().toString());
     }
     
 }

@@ -38,7 +38,7 @@ public class ClickLeft extends RCRule{
             default : 
                 board[index].setCurrentColor(board[index-1].getCurrentColor());
         }
-        board[index-3].setCurrentColor(Cube.color.EMPTY);
+        board[index-1].setCurrentColor(Cube.color.EMPTY);
                         
         State newState = new State(board, index-1);
         
