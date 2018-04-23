@@ -53,7 +53,7 @@ public class State {
     @Override
     public String toString()
     {
-        String border = "----------------\n";
+        String border = "----------------------------\n";
         String state = border;
         String lines[] = new String[12];
         
@@ -65,9 +65,9 @@ public class State {
                     for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
                     {   
                         if (lines[j] == null)
-                            lines[j] = "|oooo|";
+                            lines[j] = "|oooooooo|";
                         else
-                            lines[j] += "oooo|";
+                            lines[j] += "oooooooo|";
                     }
                     break;
 
@@ -75,9 +75,9 @@ public class State {
                     for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
                     {
                         if (lines[j] == null)
-                            lines[j] = "|xxxx|";
+                            lines[j] = "|xxxxxxxx|";
                         else
-                            lines[j] += "xxxx|";
+                            lines[j] += "xxxxxxxx|";
                     }
                     break;
 
@@ -85,9 +85,9 @@ public class State {
                     for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
                     {
                         if (lines[j] == null)
-                            lines[j] = "|ooxx|";
+                            lines[j] = "|ooooxxxx|";
                         else
-                            lines[j] += "ooxx|";
+                            lines[j] += "ooooxxxx|";
                     }
                     break;
 
@@ -95,43 +95,43 @@ public class State {
                     for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
                     {
                         if (lines[j] == null)
-                            lines[j] = "|xxoo|";
+                            lines[j] = "|xxxxoooo|";
                         else
-                            lines[j] += "xxoo|";
+                            lines[j] += "xxxxoooo|";
                     }
                     break;
 
                 case WUP:
                     if (lines[(i%3)*4 + 0] == null)
                     {
-                        lines[(i%3)*4 + 0] = "|oooo|"; 
-                        lines[(i%3)*4 + 1] = "|oooo|";
-                        lines[(i%3)*4 + 2] = "|xxxx|";
-                        lines[(i%3)*4 + 3] = "|xxxx|";
+                        lines[(i%3)*4 + 0] = "|oooooooo|"; 
+                        lines[(i%3)*4 + 1] = "|oooooooo|";
+                        lines[(i%3)*4 + 2] = "|xxxxxxxx|";
+                        lines[(i%3)*4 + 3] = "|xxxxxxxx|";
                     }
                     else
                     {
-                        lines[(i%3)*4 + 0] += "oooo|"; 
-                        lines[(i%3)*4 + 1] += "oooo|";
-                        lines[(i%3)*4 + 2] += "xxxx|";
-                        lines[(i%3)*4 + 3] += "xxxx|";
+                        lines[(i%3)*4 + 0] += "oooooooo|"; 
+                        lines[(i%3)*4 + 1] += "oooooooo|";
+                        lines[(i%3)*4 + 2] += "xxxxxxxx|";
+                        lines[(i%3)*4 + 3] += "xxxxxxxx|";
                     }
                     break;
 
                 case WDOWN:
                     if (lines[(i%3)*4 + 0] == null)
                     {
-                        lines[(i%3)*4 + 0] = "|xxxx|"; 
-                        lines[(i%3)*4 + 1] = "|xxxx|";
-                        lines[(i%3)*4 + 2] = "|oooo|";
-                        lines[(i%3)*4 + 3] = "|oooo|";
+                        lines[(i%3)*4 + 0] = "|xxxxxxxx|"; 
+                        lines[(i%3)*4 + 1] = "|xxxxxxxx|";
+                        lines[(i%3)*4 + 2] = "|oooooooo|";
+                        lines[(i%3)*4 + 3] = "|oooooooo|";
                     }
                     else
                     {
-                        lines[(i%3)*4 + 0] += "xxxx|"; 
-                        lines[(i%3)*4 + 1] += "xxxx|";
-                        lines[(i%3)*4 + 2] += "oooo|";
-                        lines[(i%3)*4 + 3] += "oooo|";
+                        lines[(i%3)*4 + 0] += "xxxxxxxx|"; 
+                        lines[(i%3)*4 + 1] += "xxxxxxxx|";
+                        lines[(i%3)*4 + 2] += "oooooooo|";
+                        lines[(i%3)*4 + 3] += "oooooooo|";
                     }
                     break;
 
@@ -139,9 +139,9 @@ public class State {
                     for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
                     {
                         if (lines[j] == null)
-                            lines[j] = "|    |";
-                        else
-                            lines[j] += "    |";
+                            lines[j] = "|        |";
+                        else 
+                            lines[j] += "        |";
                     }
                     break;
             }

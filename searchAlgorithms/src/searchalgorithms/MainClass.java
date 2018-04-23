@@ -36,7 +36,7 @@ public class MainClass {
         SearchAlgorithms.iterativeDeepening (tree);*/
 
         RollingCubes rc = new RollingCubes();
-        System.out.print(rc.getInitialState().toString());
+        SearchAlgorithms.breadthFirst(rc);
     }
     
 }
