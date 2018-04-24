@@ -5,10 +5,8 @@
  */
 package RollingCubes;
 
-import searchalgorithms.*;
 import ar.com.itba.sia.Rule;
 import ar.com.itba.sia.Problem;
-import java.util.ArrayList;
 import java.util.List;
 /**
  *

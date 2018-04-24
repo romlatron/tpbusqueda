@@ -15,6 +15,9 @@ import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import RollingCubes.RollingCubes;
+import RollingCubes.State;
+
 /**
  *
  * @author Kevin
@@ -24,9 +27,8 @@ public class MainClass {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        
+    public static void main(String[] args) 
+    {
         /*List <Rule> goLeftRight = new ArrayList<>();
         goLeftRight.add(new TreeRuleLeft());
         goLeftRight.add(new TreeRuleRight());

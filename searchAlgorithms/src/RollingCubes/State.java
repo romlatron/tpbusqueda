@@ -30,11 +30,11 @@ public class State {
         }
         
         if (indexEmpty <= 5) {     
-            nextPossibleRules.add(new ClickDown());
+            nextPossibleRules.add(new ClickDown());            
         }
                 
         if (indexEmpty != 2 && indexEmpty != 5 && indexEmpty != 8) {
-            nextPossibleRules.add(new ClickRight());
+            nextPossibleRules.add(new ClickRight());            
         }
         
         if (indexEmpty != 0 && indexEmpty != 3 && indexEmpty != 6) {
@@ -62,7 +62,7 @@ public class State {
             switch (board[i].getCurrentColor())
             {
                 case WHITE:
-                    for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
+                    for (int j = (i/3)*4; j<((i/3)*4)+4; j++)
                     {   
                         if (lines[j] == null)
                             lines[j] = "|oooooooo|";
@@ -72,7 +72,7 @@ public class State {
                     break;
 
                 case BLACK:
-                    for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
+                    for (int j = (i/3)*4; j<((i/3)*4)+4; j++)
                     {
                         if (lines[j] == null)
                             lines[j] = "|xxxxxxxx|";
@@ -82,7 +82,7 @@ public class State {
                     break;
 
                 case WLEFT:
-                    for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
+                    for (int j = (i/3)*4; j<((i/3)*4)+4; j++)
                     {
                         if (lines[j] == null)
                             lines[j] = "|ooooxxxx|";
@@ -92,7 +92,7 @@ public class State {
                     break;
 
                 case WRIGHT:
-                    for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
+                    for (int j = (i/3)*4; j<((i/3)*4)+4; j++)
                     {
                         if (lines[j] == null)
                             lines[j] = "|xxxxoooo|";
@@ -102,41 +102,41 @@ public class State {
                     break;
 
                 case WUP:
-                    if (lines[(i%3)*4 + 0] == null)
+                    if (lines[(i/3)*4 + 0] == null)
                     {
-                        lines[(i%3)*4 + 0] = "|oooooooo|"; 
-                        lines[(i%3)*4 + 1] = "|oooooooo|";
-                        lines[(i%3)*4 + 2] = "|xxxxxxxx|";
-                        lines[(i%3)*4 + 3] = "|xxxxxxxx|";
+                        lines[(i/3)*4 + 0] = "|oooooooo|"; 
+                        lines[(i/3)*4 + 1] = "|oooooooo|";
+                        lines[(i/3)*4 + 2] = "|xxxxxxxx|";
+                        lines[(i/3)*4 + 3] = "|xxxxxxxx|";
                     }
                     else
                     {
-                        lines[(i%3)*4 + 0] += "oooooooo|"; 
-                        lines[(i%3)*4 + 1] += "oooooooo|";
-                        lines[(i%3)*4 + 2] += "xxxxxxxx|";
-                        lines[(i%3)*4 + 3] += "xxxxxxxx|";
+                        lines[(i/3)*4 + 0] += "oooooooo|"; 
+                        lines[(i/3)*4 + 1] += "oooooooo|";
+                        lines[(i/3)*4 + 2] += "xxxxxxxx|";
+                        lines[(i/3)*4 + 3] += "xxxxxxxx|";
                     }
                     break;
 
                 case WDOWN:
-                    if (lines[(i%3)*4 + 0] == null)
+                    if (lines[(i/3)*4 + 0] == null)
                     {
-                        lines[(i%3)*4 + 0] = "|xxxxxxxx|"; 
-                        lines[(i%3)*4 + 1] = "|xxxxxxxx|";
-                        lines[(i%3)*4 + 2] = "|oooooooo|";
-                        lines[(i%3)*4 + 3] = "|oooooooo|";
+                        lines[(i/3)*4 + 0] = "|xxxxxxxx|"; 
+                        lines[(i/3)*4 + 1] = "|xxxxxxxx|";
+                        lines[(i/3)*4 + 2] = "|oooooooo|";
+                        lines[(i/3)*4 + 3] = "|oooooooo|";
                     }
                     else
                     {
-                        lines[(i%3)*4 + 0] += "xxxxxxxx|"; 
-                        lines[(i%3)*4 + 1] += "xxxxxxxx|";
-                        lines[(i%3)*4 + 2] += "oooooooo|";
-                        lines[(i%3)*4 + 3] += "oooooooo|";
+                        lines[(i/3)*4 + 0] += "xxxxxxxx|"; 
+                        lines[(i/3)*4 + 1] += "xxxxxxxx|";
+                        lines[(i/3)*4 + 2] += "oooooooo|";
+                        lines[(i/3)*4 + 3] += "oooooooo|";
                     }
                     break;
 
                 default:
-                    for (int j = (i%3)*4; j<((i%3)*4)+4; j++)
+                    for (int j = (i/3)*4; j<((i/3)*4)+4; j++)
                     {
                         if (lines[j] == null)
                             lines[j] = "|        |";
