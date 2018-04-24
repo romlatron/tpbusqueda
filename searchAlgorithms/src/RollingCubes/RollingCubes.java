@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class RollingCubes implements Problem {
     
-    public State initialState;
+    private State initialState;
 
     @Override
     public Object getInitialState() {

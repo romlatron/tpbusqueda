@@ -6,6 +6,7 @@
 package searchalgorithms;
 
 import RollingCubes.RollingCubes;
+import RollingCubes.State;
 import treetest.TreeState;
 import treetest.TreeRuleLeft;
 import treetest.TreeExample;
@@ -36,7 +37,13 @@ public class MainClass {
         SearchAlgorithms.iterativeDeepening (tree);*/
 
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.breadthFirst(rc);
+        State root = (State)rc.getInitialState();
+        System.out.println(root);
+        
+        State first = (State)root.getRules().get(0).applyToState(root);
+        
+        System.out.println(first);
+        System.out.println(root);
     }
     
 }
