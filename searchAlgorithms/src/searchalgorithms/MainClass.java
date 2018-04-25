@@ -41,9 +41,15 @@ public class MainClass {
         RollingCubes rc = new RollingCubes();
         State root = (State)rc.getInitialState();
         Heuristic h = ColorCubesHeuristic.getInstance();
+        List<Rule> rules = rc.getRules(root);
+        Object next = rules.get(0).applyToState(root);
+        System.out.println(next.equals(root));
+        
+        System.out.println(rules.get(1).applyToState(next).equals(root));
         
         //SearchAlgorithms.depthFirst(rc, root, null);
-        System.out.println(SearchAlgorithms.Astar(rc, h));
+        //SearchAlgorithms.greedySearch(rc, h);
+        //System.out.println(SearchAlgorithms.Astar(rc, h));
 
         
     }

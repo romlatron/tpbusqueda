@@ -61,27 +61,43 @@ public class SearchAlgorithms
             System.out.println(queue.element());
     }
     
-    public static void greedySearch(Problem p)
+    public static void greedySearch(Problem p, Heuristic h)
     {
         Object currentState  = p.getInitialState();
         Object nextState;
-        double minRuleCost;
+        Rule applyRule;
+        double minScore;
+        HashMap <Object, Object> visitedNodes = new HashMap<>();
+        visitedNodes.put(currentState, null);
         
         while(!p.isResolved(currentState))
         {
-            List<Rule<Object>> rules = p.getRules(currentState);
-            minRuleCost = rules.get(0).getCost();
-            nextState = rules.get(0).applyToState(currentState);
+            System.out.println(currentState);
+            
+            List<Rule> rules = p.getRules(currentState);
+            applyRule = null;
+            minScore = Double.POSITIVE_INFINITY ;
             
             for (Rule<Object> rule : rules)
             {
-                if (rule.getCost() < minRuleCost)
-                {
-                    minRuleCost = rule.getCost();
-                    nextState = rule.applyToState(currentState);
+                if (!visitedNodes.keySet().contains(rule.applyToState(currentState))) {
+                    if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore)
+                    {
+                        minScore = rule.getCost();
+                        applyRule = rule;
+                    }
                 }
             }
-            currentState = nextState;
+            if (applyRule != null) {
+                System.out.println("RULE APPLIED");
+                nextState = applyRule.applyToState(currentState);
+                visitedNodes.put(nextState, currentState);
+                currentState = nextState;
+            }
+            else {
+                System.out.println("RULE not APPLIED");
+                currentState = visitedNodes.get(currentState);
+            }
         }
     }
     
