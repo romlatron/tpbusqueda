@@ -8,9 +8,14 @@ package searchalgorithms;
 import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
+import java.util.TreeMap;
+import javafx.util.Pair;
 
 
 /**
@@ -19,7 +24,7 @@ import java.util.Queue;
  */
 public class SearchAlgorithms
 {
-    public static boolean depthFirst (Problem p, Object state) {
+    public static boolean depthFirst (Problem p, Object state, Object previousState) {
         System.out.println(state);
         if (p.isResolved(state)) {
             System.out.println("Bingo");
@@ -27,8 +32,10 @@ public class SearchAlgorithms
         }
         List <Rule> rules = p.getRules(state);
         for (Rule rule : rules) {
-            if (depthFirst(p, rule.applyToState(state)))
-                return true;
+            if (!rule.applyToState(state).equals(previousState)) {
+                if (depthFirst(p, rule.applyToState(state), state))
+                    return true;
+            }
         }
         
         return false;           
@@ -78,22 +85,55 @@ public class SearchAlgorithms
         }
     }
     
-    public static List<Object> Astar(Problem p, Heuristic h)
+    public static boolean Astar(Problem p, Heuristic h)
     {
-        List<Object> bestPath = new ArrayList<Object>();
-        HashMap<Object, Double> visitedStates = new HashMap<>();
-        boolean isListModified = true;
-        
+        Map<Double, Pair<Object, Double>> openList = new TreeMap<>(); //contains f(state) and g(state)
+        HashMap<Object, Double> closedList = new LinkedHashMap<>(); 
+        boolean resolved = false;
         Object initialState = p.getInitialState();
-        double rootAstarScore = h.getValue(initialState);
+        openList.put(h.getValue(initialState), new Pair<> (initialState, 0.0));
         
-        
-        while(isListModified)
-        {
+        while(!openList.isEmpty())
+        {            
+            Map.Entry<Double, Pair<Object, Double>> pair = openList.entrySet().iterator().next();
+            Object currentState = pair.getValue().getKey();
+            if (p.isResolved(currentState)) {
+                resolved = true;
+                break;
+            }
+            double currentScore = pair.getKey();
+            closedList.remove(pair);
             
+            List <Rule> rules = p.getRules(currentState);
+            for (Rule rule : rules) {
+                
+                Object nextState = rule.applyToState(currentState);
+                double nextCost = pair.getValue().getValue() + rule.getCost();
+                double nextScore = h.getValue(nextState);
+                
+                for (Map.Entry<Double, Pair<Object, Double>> entry : openList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
+                    if (entry.getValue().getKey().equals(nextState)) {
+                        if (entry.getKey() > currentScore) {
+                            
+                            for (Map.Entry<Object, Double> entryClosed : closedList.entrySet()) { //check the same with closed list
+                                if (entryClosed.getKey().equals(currentState)) {
+                                    if (entryClosed.getValue() > currentScore) {
+                                        openList.remove(entry.getValue());
+                                        openList.put(nextScore, new Pair<> (nextState, nextCost));
+                                        closedList.remove(entryClosed.getKey());
+                                        closedList.put(currentState, currentScore);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        break;
+                    }
+                }
+            }
         }
-        
-        return bestPath;
+        return resolved;
     }
         
     public static void iterativeDeepening (Problem p) {

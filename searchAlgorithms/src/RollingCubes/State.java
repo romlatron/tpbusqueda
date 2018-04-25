@@ -7,6 +7,7 @@ package RollingCubes;
 
 import ar.com.itba.sia.Rule;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 /**
  *
@@ -49,6 +50,25 @@ public class State {
     public Cube[] getBoard() { return board; }
     
     public int getIndexEmpty() { return indexEmpty; }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (!(other instanceof State)) return false;
+        State s = (State) other;
+        for (int i = 0; i<9; i++) {
+            if (this.board[i].getCurrentColor() != s.getBoard()[i].getCurrentColor())
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + Arrays.deepHashCode(this.board);
+        return hash;
+    }
     
     @Override
     public String toString()

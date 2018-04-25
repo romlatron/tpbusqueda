@@ -5,8 +5,6 @@
  */
 package searchalgorithms;
 
-import RollingCubes.RollingCubes;
-import RollingCubes.State;
 import treetest.TreeState;
 import treetest.TreeRuleLeft;
 import treetest.TreeExample;
@@ -17,6 +15,8 @@ import java.util.List;
 
 import RollingCubes.RollingCubes;
 import RollingCubes.State;
+import RollingCubes.ColorCubesHeuristic;
+
 
 /**
  *
@@ -40,12 +40,12 @@ public class MainClass {
 
         RollingCubes rc = new RollingCubes();
         State root = (State)rc.getInitialState();
-        System.out.println(root);
+        Heuristic h = ColorCubesHeuristic.getInstance();
         
-        State first = (State)root.getRules().get(0).applyToState(root);
+        //SearchAlgorithms.depthFirst(rc, root, null);
+        System.out.println(SearchAlgorithms.Astar(rc, h));
+
         
-        System.out.println(first);
-        System.out.println(root);
     }
     
 }
