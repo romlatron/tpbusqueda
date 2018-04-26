@@ -43,12 +43,12 @@ public class MainClass {
         Heuristic h = ColorCubesHeuristic.getInstance();
         List<Rule> rules = rc.getRules(root);
         Object next = rules.get(0).applyToState(root);
-        System.out.println(next.equals(root));
+      //  System.out.println(next.equals(root));
         
-        System.out.println(rules.get(1).applyToState(next).equals(root));
+       // System.out.println(rules.get(1).applyToState(next).equals(root));
         
         //SearchAlgorithms.depthFirst(rc, root, null);
-        //SearchAlgorithms.greedySearch(rc, h);
+        SearchAlgorithms.greedySearch(rc, h);
         //System.out.println(SearchAlgorithms.Astar(rc, h));
 
         

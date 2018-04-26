@@ -67,35 +67,41 @@ public class SearchAlgorithms
         Object nextState;
         Rule applyRule;
         double minScore;
+        boolean visited;
         HashMap <Object, Object> visitedNodes = new HashMap<>();
         visitedNodes.put(currentState, null);
         
+        int i =0;
         while(!p.isResolved(currentState))
         {
+            i++;
             System.out.println(currentState);
+            System.out.print(h.getValue(currentState));
+            System.out.println(i);
             
             List<Rule> rules = p.getRules(currentState);
             applyRule = null;
             minScore = Double.POSITIVE_INFINITY ;
-            
+
             for (Rule<Object> rule : rules)
-            {
-                if (!visitedNodes.keySet().contains(rule.applyToState(currentState))) {
+            {                
+                visited = false;
+                for (Object o : visitedNodes.keySet())
+                    if (o.equals(rule.applyToState(currentState))) visited = true;
+                if (!visited) {
                     if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore)
                     {
-                        minScore = rule.getCost();
+                        minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
                         applyRule = rule;
                     }
                 }
             }
             if (applyRule != null) {
-                System.out.println("RULE APPLIED");
                 nextState = applyRule.applyToState(currentState);
                 visitedNodes.put(nextState, currentState);
                 currentState = nextState;
             }
             else {
-                System.out.println("RULE not APPLIED");
                 currentState = visitedNodes.get(currentState);
             }
         }
