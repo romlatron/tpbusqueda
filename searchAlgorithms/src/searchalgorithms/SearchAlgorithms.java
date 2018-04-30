@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
-import javafx.util.Pair;
+//import javafx.util.Pair;
 
 
 /**
@@ -44,7 +44,9 @@ public class SearchAlgorithms
     public static void breadthFirst(Problem p)
     {
         Queue<Object> queue = new LinkedList<Object>();
+        List<Object> visitedNodes = new ArrayList<>();
         queue.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
         
         while(!queue.isEmpty() && !p.isResolved(queue.element()))
         {   
@@ -52,8 +54,15 @@ public class SearchAlgorithms
             System.out.println(tmpObj);
             
             List<Rule>rules = p.getRules(tmpObj);
-            for (Rule rule : rules) {
-                queue.add(rule.applyToState(tmpObj));
+            for (Rule rule : rules) 
+            {
+                Object currentState = rule.applyToState(tmpObj);
+                
+                if (!visitedNodes.contains(currentState))
+                {
+                    visitedNodes.add(currentState);
+                    queue.add(currentState);
+                }
             }
         }
         
@@ -69,72 +78,83 @@ public class SearchAlgorithms
         
         while(!p.isResolved(currentState))
         {
+            System.out.println(currentState.toString());
             List<Rule<Object>> rules = p.getRules(currentState);
             minRuleCost = rules.get(0).getCost();
             nextState = rules.get(0).applyToState(currentState);
             
-            for (Rule<Object> rule : rules)
+//            for (Rule<Object> rule : rules)
+//            {
+//                if (rule.getCost() < minRuleCost)
+//                {
+//                    minRuleCost = rule.getCost();
+//                    nextState = rule.applyToState(currentState);
+//                }
+//            }
+            int i = 1;
+            while (i < rules.size() && nextState.equals(currentState))
             {
-                if (rule.getCost() < minRuleCost)
+                if (rules.get(i).getCost() <= minRuleCost)
                 {
-                    minRuleCost = rule.getCost();
-                    nextState = rule.applyToState(currentState);
+                    minRuleCost = rules.get(i).getCost();
+                    nextState = rules.get(i).applyToState(currentState);
                 }
+                i++;
             }
             currentState = nextState;
         }
     }
     
-    public static boolean Astar(Problem p, Heuristic h)
-    {
-        Map<Double, Pair<Object, Double>> openList = new TreeMap<>(); //contains f(state) and g(state)
-        HashMap<Object, Double> closedList = new LinkedHashMap<>(); 
-        boolean resolved = false;
-        Object initialState = p.getInitialState();
-        openList.put(h.getValue(initialState), new Pair<> (initialState, 0.0));
-        
-        while(!openList.isEmpty())
-        {            
-            Map.Entry<Double, Pair<Object, Double>> pair = openList.entrySet().iterator().next();
-            Object currentState = pair.getValue().getKey();
-            if (p.isResolved(currentState)) {
-                resolved = true;
-                break;
-            }
-            double currentScore = pair.getKey();
-            closedList.remove(pair);
-            
-            List <Rule> rules = p.getRules(currentState);
-            for (Rule rule : rules) {
-                
-                Object nextState = rule.applyToState(currentState);
-                double nextCost = pair.getValue().getValue() + rule.getCost();
-                double nextScore = h.getValue(nextState);
-                
-                for (Map.Entry<Double, Pair<Object, Double>> entry : openList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
-                    if (entry.getValue().getKey().equals(nextState)) {
-                        if (entry.getKey() > currentScore) {
-                            
-                            for (Map.Entry<Object, Double> entryClosed : closedList.entrySet()) { //check the same with closed list
-                                if (entryClosed.getKey().equals(currentState)) {
-                                    if (entryClosed.getValue() > currentScore) {
-                                        openList.remove(entry.getValue());
-                                        openList.put(nextScore, new Pair<> (nextState, nextCost));
-                                        closedList.remove(entryClosed.getKey());
-                                        closedList.put(currentState, currentScore);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        break;
-                    }
-                }
-            }
-        }
-        return resolved;
-    }
+//    public static boolean Astar(Problem p, Heuristic h)
+//    {
+//        Map<Double, Pair<Object, Double>> openList = new TreeMap<>(); //contains f(state) and g(state)
+//        HashMap<Object, Double> closedList = new LinkedHashMap<>(); 
+//        boolean resolved = false;
+//        Object initialState = p.getInitialState();
+//        openList.put(h.getValue(initialState), new Pair<> (initialState, 0.0));
+//        
+//        while(!openList.isEmpty())
+//        {            
+//            Map.Entry<Double, Pair<Object, Double>> pair = openList.entrySet().iterator().next();
+//            Object currentState = pair.getValue().getKey();
+//            if (p.isResolved(currentState)) {
+//                resolved = true;
+//                break;
+//            }
+//            double currentScore = pair.getKey();
+//            closedList.remove(pair);
+//            
+//            List <Rule> rules = p.getRules(currentState);
+//            for (Rule rule : rules) {
+//                
+//                Object nextState = rule.applyToState(currentState);
+//                double nextCost = pair.getValue().getValue() + rule.getCost();
+//                double nextScore = h.getValue(nextState);
+//                
+//                for (Map.Entry<Double, Pair<Object, Double>> entry : openList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
+//                    if (entry.getValue().getKey().equals(nextState)) {
+//                        if (entry.getKey() > currentScore) {
+//                            
+//                            for (Map.Entry<Object, Double> entryClosed : closedList.entrySet()) { //check the same with closed list
+//                                if (entryClosed.getKey().equals(currentState)) {
+//                                    if (entryClosed.getValue() > currentScore) {
+//                                        openList.remove(entry.getValue());
+//                                        openList.put(nextScore, new Pair<> (nextState, nextCost));
+//                                        closedList.remove(entryClosed.getKey());
+//                                        closedList.put(currentState, currentScore);
+//                                    }
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                        
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//        return resolved;
+//    }
         
     public static void iterativeDeepening (Problem p) {
         Object actualState = p.getInitialState();

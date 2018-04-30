@@ -55,7 +55,7 @@ public class State {
     public boolean equals(Object other) {
         if (other == null) return false;
         if (!(other instanceof State)) return false;
-        State s = (State) other;
+        State s = (State)other;
         for (int i = 0; i<9; i++) {
             if (this.board[i].getCurrentColor() != s.getBoard()[i].getCurrentColor())
                 return false;
