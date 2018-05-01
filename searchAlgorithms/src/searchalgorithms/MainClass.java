@@ -16,6 +16,7 @@ import java.util.List;
 import RollingCubes.RollingCubes;
 import RollingCubes.State;
 import RollingCubes.ColorCubesHeuristic;
+import RollingCubes.ImprovedHeuristic;
 
 
 /**
@@ -40,7 +41,7 @@ public class MainClass {
 
         RollingCubes rc = new RollingCubes();
         State root = (State)rc.getInitialState();
-        Heuristic h = ColorCubesHeuristic.getInstance();
+        Heuristic h = ImprovedHeuristic.getInstance();
         List<Rule> rules = rc.getRules(root);
         Object next = rules.get(0).applyToState(root);
       //  System.out.println(next.equals(root));
