@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Stack;
 import java.util.TreeMap;
 //import javafx.util.Pair;
 
@@ -23,22 +24,36 @@ import java.util.TreeMap;
  * @author Kevin
  */
 public class SearchAlgorithms
-{
-    public static boolean depthFirst (Problem p, Object state, Object previousState) {
-        System.out.println(state);
-        if (p.isResolved(state)) {
-            System.out.println("Bingo");
-            return true;
-        }
-        List <Rule> rules = p.getRules(state);
-        for (Rule rule : rules) {
-            if (!rule.applyToState(state).equals(previousState)) {
-                if (depthFirst(p, rule.applyToState(state), state))
-                    return true;
+{   
+    public static void depthFirst(Problem p)
+    {
+        int i=0;
+        Stack<Object> stack = new Stack<>();
+        List<Object> visitedNodes = new ArrayList<>();
+        stack.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
+        
+        while(!stack.isEmpty() && !p.isResolved(stack.peek()))
+        {
+            Object tmpObj = stack.pop();
+            System.out.println(i);
+            System.out.println(tmpObj);
+            
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules)
+            {
+                Object currentState = rule.applyToState(tmpObj);
+                
+                if (!visitedNodes.contains(currentState))
+                {
+                    visitedNodes.add(currentState);
+                    stack.push(currentState);
+                    i++;
+                }
             }
         }
-        
-        return false;           
+        if (p.isResolved(stack.peek()))
+            System.out.println(stack.peek());
     }
     
     public static void breadthFirst(Problem p)

@@ -42,7 +42,9 @@ public class MainClass {
         State root = (State)rc.getInitialState();
         Heuristic h = ColorCubesHeuristic.getInstance();
         
-        SearchAlgorithms.breadthFirst(rc);
+        //SearchAlgorithms.breadthFirst(rc);
+        List<Object> visitedNodes = new ArrayList<>();
+        SearchAlgorithms.depthFirst(rc);
     }
     
 }
