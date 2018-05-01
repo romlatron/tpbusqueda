@@ -44,7 +44,7 @@ public class MainClass {
         
         //SearchAlgorithms.breadthFirst(rc);
         List<Object> visitedNodes = new ArrayList<>();
-        SearchAlgorithms.depthFirst(rc);
+        SearchAlgorithms.iterativeDeepening(rc);
     }
     
 }

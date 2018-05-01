@@ -171,30 +171,47 @@ public class SearchAlgorithms
 //        return resolved;
 //    }
         
-    public static void iterativeDeepening (Problem p) {
+    public static void iterativeDeepening (Problem p) 
+    {
         Object actualState = p.getInitialState();
-        int maxDepth = 1;
-        while (!depthFirstLim(p, actualState, maxDepth) ) {
-            maxDepth ++;
-        }
-            
+        System.out.println(actualState);
+        int depth = 1;
+        int i = 1;
+        
+        while (!depthFirstLim(p, actualState, depth))
+            depth++;
+        
+        System.out.println("BINGO !!!");
     }
     
     //recursive algorithm used by iterative deepening
-    public static boolean depthFirstLim (Problem p, Object state, int limite) {
-        if (limite == 0)
-            return false;
-        System.out.println(state);
-        if (p.isResolved(state)) {
-            System.out.println("Bingo");
+    private static boolean depthFirstLim (Problem p, Object state, int depth) 
+    {   
+        //System.out.println(depth);
+        if (p.isResolved(state))
+        {
+            System.out.println(state);
             return true;
         }
-        List <Rule> rules = p.getRules(state);
-        for (Rule rule : rules) {
-            if (depthFirstLim(p, rule.applyToState(state), limite - 1))
-                return true;
+        if (depth > 0)
+        {
+            List<Object> visitedNodes = new ArrayList<>();
+            visitedNodes.add(state);
+            List <Rule> rules = p.getRules(state);
+            for (Rule rule : rules) 
+            {
+                Object nextState = rule.applyToState(state);
+                if (!visitedNodes.contains(nextState))
+                {
+                    System.out.println(nextState);
+                    visitedNodes.add(nextState);
+                    if (depthFirstLim(p, nextState, depth-1))
+                        return true;
+                }
+            }
         }
-        
         return false;           
     }
 }
+
+
