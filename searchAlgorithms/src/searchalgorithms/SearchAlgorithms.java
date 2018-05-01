@@ -106,11 +106,18 @@ public class SearchAlgorithms
                 currentState = visitedNodes.get(currentState);
             }
         }
+        int profundidad = 0;
         while (currentState != null) {
+            profundidad++;
             System.out.println(currentState);
             currentState = visitedNodes.get(currentState);
         }
         System.out.println(i);
+        System.out.println("Profundidad de la solucion : " + profundidad);
+        
+        int nExpandidos = 0;
+        nExpandidos = visitedNodes.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+        System.out.println("Nodos expandidos : " + nExpandidos);
     }
     
     public static boolean Astar(Problem p, Heuristic h)
@@ -183,6 +190,17 @@ public class SearchAlgorithms
             }
             closedList.put(currentState, currentScore);
         }
+                
+        int nFrontera = 0;
+        nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+        System.out.println("Nodos frontera : " + nFrontera);
+        
+        int nExpandidos = 0;
+        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+        System.out.println("Nodos expandidos : " + nExpandidos);
+        
+        System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
+       
         return resolved;
     }
         

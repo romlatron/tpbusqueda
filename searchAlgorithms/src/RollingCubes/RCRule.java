@@ -35,7 +35,6 @@ public abstract class RCRule implements Rule{
     
     protected List<Rule> newStateRules (int emptyIndex) {
         List <Rule> nextPossibleRules = new ArrayList();
-        nextPossibleRules.add(new ClickDown());
         
         if (emptyIndex >= 3) {     
             nextPossibleRules.add(new ClickUp());
