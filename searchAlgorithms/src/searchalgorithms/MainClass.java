@@ -48,8 +48,8 @@ public class MainClass {
        // System.out.println(rules.get(1).applyToState(next).equals(root));
         
         //SearchAlgorithms.depthFirst(rc, root, null);
-        SearchAlgorithms.greedySearch(rc, h);
-        //System.out.println(SearchAlgorithms.Astar(rc, h));
+        //SearchAlgorithms.greedySearch(rc, h);
+        System.out.println(SearchAlgorithms.Astar(rc, h));
 
         
     }

@@ -13,9 +13,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.TreeMap;
 import javafx.util.Pair;
+
 
 
 /**
@@ -72,10 +74,9 @@ public class SearchAlgorithms
         visitedNodes.put(currentState, null);
         
         int i =0;
-        while(!p.isResolved(currentState))
+        while(!p.isResolved(currentState))  
         {
             i++;
-            System.out.println(currentState);
             System.out.print(h.getValue(currentState));
             System.out.println(i);
             
@@ -105,55 +106,82 @@ public class SearchAlgorithms
                 currentState = visitedNodes.get(currentState);
             }
         }
+        while (currentState != null) {
+            System.out.println(currentState);
+            currentState = visitedNodes.get(currentState);
+        }
+        System.out.println(i);
     }
     
     public static boolean Astar(Problem p, Heuristic h)
     {
-        Map<Double, Pair<Object, Double>> openList = new TreeMap<>(); //contains f(state) and g(state)
-        HashMap<Object, Double> closedList = new LinkedHashMap<>(); 
+        Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
+        HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
         boolean resolved = false;
         Object initialState = p.getInitialState();
-        openList.put(h.getValue(initialState), new Pair<> (initialState, 0.0));
+        Object currentState, nextState, existingClosed;    
+        double currentCost, currentScore, nextCost, nextScore;
+        boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
+        openList.put(initialState, h.getValue(initialState));
+        int i = 0;
         
         while(!openList.isEmpty())
-        {            
-            Map.Entry<Double, Pair<Object, Double>> pair = openList.entrySet().iterator().next();
-            Object currentState = pair.getValue().getKey();
+        {   
+            i++;
+            Entry<Object, Double> min = null;
+            for (Entry<Object, Double> entry : openList.entrySet()) {
+                if (min == null || min.getValue() > entry.getValue()) {
+                    min = entry;
+                }
+            }
+            currentState = min.getKey();
+            System.out.println(currentState);
             if (p.isResolved(currentState)) {
                 resolved = true;
                 break;
             }
-            double currentScore = pair.getKey();
-            closedList.remove(pair);
-            
+            currentScore = min.getValue();
+            currentCost = min.getValue() - h.getValue(currentState); 
+            openList.remove(min.getKey());
+            System.out.println(currentScore + " " + h.getValue(currentState) + " " + i);
             List <Rule> rules = p.getRules(currentState);
+            
             for (Rule rule : rules) {
+            
+                visited = false;
+                waitingList = false;
+                existingClosed = null;
+                nextState = rule.applyToState(currentState);
+                nextCost = currentCost + rule.getCost();
+                nextScore =  nextCost + h.getValue(nextState);
                 
-                Object nextState = rule.applyToState(currentState);
-                double nextCost = pair.getValue().getValue() + rule.getCost();
-                double nextScore = h.getValue(nextState);
-                
-                for (Map.Entry<Double, Pair<Object, Double>> entry : openList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
-                    if (entry.getValue().getKey().equals(nextState)) {
-                        if (entry.getKey() > currentScore) {
-                            
-                            for (Map.Entry<Object, Double> entryClosed : closedList.entrySet()) { //check the same with closed list
-                                if (entryClosed.getKey().equals(currentState)) {
-                                    if (entryClosed.getValue() > currentScore) {
-                                        openList.remove(entry.getValue());
-                                        openList.put(nextScore, new Pair<> (nextState, nextCost));
-                                        closedList.remove(entryClosed.getKey());
-                                        closedList.put(currentState, currentScore);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        
+                for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
+                    if (entry.getKey().equals(nextState)) {
+                        existingClosed = entry.getKey();
+                        visited = entry.getValue() <= nextScore;
                         break;
                     }
                 }
+                
+                if (!visited) {
+                
+                    Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
+                    while (ite.hasNext()) {
+                        Map.Entry<Object, Double> entry = ite.next();
+                        if (entry.getKey().equals(nextState)) {
+                            waitingList = entry.getValue()<= nextScore;
+                            if (!waitingList) ite.remove();
+                            break;
+                        }
+                    }
+
+                    if (!waitingList) {
+                        openList.put(nextState, nextScore);
+                        if (existingClosed != null) closedList.remove(existingClosed);
+                    }
+                }
             }
+            closedList.put(currentState, currentScore);
         }
         return resolved;
     }
