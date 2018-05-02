@@ -26,39 +26,84 @@ public class ImprovedHeuristic implements Heuristic{
     @Override
     public double getValue(Object e) {
         State s = (State) e;
-        double count = 0;        
+        double count = 0;  
+        double minCost = 0;
         Cube [] board = s.getBoard();
         for (int i = 0; i<9; i++) 
             switch(board[i].getCurrentColor()) {
                 case WUP :
-                    if (i==6 || i==8) count += 5;
-                    else count += 1;
+                    if (i==6 || i==8) {
+                        if (minCost < 9)
+                            minCost = 9;
+                        count += 3;
+                    }
+                    else if (i == 7) {
+                        if (minCost < 12)
+                            minCost = 12;
+                        count += 4;
+                    }
+                    else count += 1 ;
                     break; 
                 case WDOWN :
-                    if (i==0 || i==2) count += 5;
-                    else count += 1;
+                    if (i==0 || i==2) {
+                        if (minCost < 9)
+                            minCost = 9;
+                        count += 3;
+                    }
+                    else if (i == 1) {
+                        if (minCost < 12)
+                            minCost = 12;
+                        count += 4;
+                    }
+                    else count += 1 ;
                     break;  
                 case WLEFT :
-                    if (i==2 || i==8) count += 5;
-                    else count += 1;
+                    if (i==2 || i==8) {
+                        if (minCost < 9)
+                            minCost = 9;
+                        count += 3;
+                    }
+                    else if (i == 5) {
+                        if (minCost < 12)
+                            minCost = 12;
+                        count += 4;
+                    }
+                    else count += 1 ;
                     break; 
                 case WRIGHT :
-                    if (i==0 || i==6) count += 5;
-                    else count += 1;
+                    if (i==0 || i==6) {
+                        if (minCost < 9)
+                            minCost = 9;
+                        count += 3;
+                    }
+                    else if (i == 3) {
+                        if (minCost < 12)
+                            minCost = 12;
+                        count += 4;
+                    }
+                    else count += 1 ;
                     break; 
                     
                 case BLACK :
-                    if (i==5) count += 6;
-                    else count += 4;
+                    if (i==4) { 
+                        if (minCost < 15) {
+                            minCost = 15;
+                            count += 5;
+                        }
+                    }
+                    else {
+                        if (minCost < 6)
+                            minCost = 6; 
+                        count += 2;
+                    }
                     break;
                 
-                case WHITE :    
-                    if (i==5) count += 6;
-                    break;
                 default :
                     break;
             }
-        return count;
+        if (count > minCost)
+            return count;
+        else return minCost;
     }
     
     

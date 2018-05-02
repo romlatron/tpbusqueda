@@ -30,20 +30,22 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        /*List <Rule> goLeftRight = new ArrayList<>();
-        goLeftRight.add(new TreeRuleLeft());
-        goLeftRight.add(new TreeRuleRight());
-        TreeState init = new TreeState (1, goLeftRight);
-        TreeState fin = new TreeState (6, goLeftRight);
-        TreeExample tree = new TreeExample (init, fin);
         
-        SearchAlgorithms.iterativeDeepening (tree);*/
-
         RollingCubes rc = new RollingCubes();
         State root = (State)rc.getInitialState();
-        Heuristic h = ImprovedHeuristic.getInstance();
-        List<Rule> rules = rc.getRules(root);
-        Object next = rules.get(0).applyToState(root);
+        Heuristic h=ImprovedHeuristic.getInstance();
+        /*if (args.length==0) { 
+            h = ImprovedHeuristic.getInstance(); 
+            
+        }
+        
+        else {
+            switch(args[2])
+                
+        } */
+        //System.out.println(SearchAlgorithms.Astar(rc, h));
+
+       
       //  System.out.println(next.equals(root));
         
        // System.out.println(rules.get(1).applyToState(next).equals(root));
