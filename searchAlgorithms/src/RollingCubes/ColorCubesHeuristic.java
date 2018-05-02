@@ -28,22 +28,12 @@ public class ColorCubesHeuristic implements Heuristic{
         State s = (State) e;
         double count = 0;        
         Cube [] board = s.getBoard();
-        for (Cube c : board) 
-            switch(c.getCurrentColor()) {
-                case WUP :
-                case WDOWN :    
-                case WLEFT :
-                case WRIGHT :
-                    count += 1;
-                    break;
-                    
-                case BLACK :
-                    count += 2;
-                    break;
-                    
-                default :
-                    break;
-            }
+        
+        // Count black cubes
+        for (Cube c : board) if (c.getCurrentColor() == Cube.color.BLACK) count++;
+        // Check if middle is empty
+        if (board[4].getCurrentColor() != Cube.color.EMPTY) count++;
+        
         return count;
     }
     

@@ -77,7 +77,7 @@ public class SearchAlgorithms
         while(!p.isResolved(currentState))  
         {
             i++;
-            System.out.print(h.getValue(currentState));
+            System.out.println(h.getValue(currentState));
             System.out.println(i);
             
             List<Rule> rules = p.getRules(currentState);
