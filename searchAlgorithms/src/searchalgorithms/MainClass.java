@@ -33,27 +33,35 @@ public class MainClass {
         
         RollingCubes rc = new RollingCubes();
         State root = (State)rc.getInitialState();
-        Heuristic h=ImprovedHeuristic.getInstance();
-        /*if (args.length==0) { 
-            h = ImprovedHeuristic.getInstance(); 
-            
+        Heuristic h = ImprovedHeuristic.getInstance();
+        if (args.length==0) { 
+           // System.out.println(SearchAlgorithms.Astar(rc, h));
+            SearchAlgorithms.greedySearch(rc, h);
         }
         
         else {
-            switch(args[2])
+            switch(args[2]) {
+                case "ImproveHeuristic" :
+                    h = ImprovedHeuristic.getInstance();
+                    break;
+                case "ColorCubesHeuristic" :
+                    h = ColorCubesHeuristic.getInstance();
+                    break;
+                default :
+                    break;
+            }
+            switch(args[1]) {
+                case "AStar" :
+                    System.out.println(SearchAlgorithms.Astar(rc, h));
+                    break;
+                case "Greedy" :
+                    SearchAlgorithms.greedySearch(rc, h);
+                    break;
+                default :
+                    break;
+            }
                 
-        } */
-        //System.out.println(SearchAlgorithms.Astar(rc, h));
-
-       
-      //  System.out.println(next.equals(root));
-        
-       // System.out.println(rules.get(1).applyToState(next).equals(root));
-        
-        //SearchAlgorithms.depthFirst(rc, root, null);
-        //SearchAlgorithms.greedySearch(rc, h);
-        System.out.println(SearchAlgorithms.Astar(rc, h));
-
+        } 
         
     }
     
