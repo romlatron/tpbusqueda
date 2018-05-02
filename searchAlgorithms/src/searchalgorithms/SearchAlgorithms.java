@@ -204,10 +204,11 @@ public class SearchAlgorithms
                 if (!visitedNodes.contains(nextState))
                 {
                     System.out.println(nextState);
-                    visitedNodes.add(nextState);
                     if (depthFirstLim(p, nextState, depth-1))
                         return true;
                 }
+                if (depth == 1)
+                    visitedNodes.add(nextState);
             }
         }
         return false;           
