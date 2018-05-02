@@ -31,10 +31,23 @@ public class MainClass {
         if (args.length==0) { 
            // System.out.println(SearchAlgorithms.Astar(rc, h));
             SearchAlgorithms.greedySearch(rc, h);
-        }
-        
-        else {
-            switch(args[2]) {
+        } else if (args.length == 1) {
+            switch(args[0]) {
+                case "DFS" :
+                    SearchAlgorithms.depthFirst(rc);
+                    break;
+                case "BFS" :
+                    SearchAlgorithms.breadthFirst(rc);
+                    break;
+                case "ID" :
+                    SearchAlgorithms.iterativeDeepening(rc);
+                    break;
+                default :
+                    System.out.println("Invalid method");
+                    break;
+            }
+        } else {
+            switch(args[1]) {
                 case "ImproveHeuristic" :
                     h = ImprovedHeuristic.getInstance();
                     break;
@@ -42,9 +55,10 @@ public class MainClass {
                     h = ColorCubesHeuristic.getInstance();
                     break;
                 default :
-                    break;
+                    System.out.println("Invalid heuristic");
+                    return;
             }
-            switch(args[1]) {
+            switch(args[0]) {
                 case "AStar" :
                     System.out.println(SearchAlgorithms.Astar(rc, h));
                     break;
@@ -52,11 +66,13 @@ public class MainClass {
                     SearchAlgorithms.greedySearch(rc, h);
                     break;
                 default :
+                    System.out.println("Invalid method");
                     break;
             }
                 
         } 
         
     }
+
     
 }
