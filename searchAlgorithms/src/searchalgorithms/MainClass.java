@@ -5,13 +5,7 @@
  */
 package searchalgorithms;
 
-import treetest.TreeState;
-import treetest.TreeRuleLeft;
-import treetest.TreeExample;
-import treetest.TreeRuleRight;
 import ar.com.itba.sia.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import RollingCubes.RollingCubes;
 import RollingCubes.State;

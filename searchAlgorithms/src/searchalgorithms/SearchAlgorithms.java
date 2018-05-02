@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.TreeMap;
-import javafx.util.Pair;
+import java.util.Stack;
 
 
 
@@ -26,27 +25,43 @@ import javafx.util.Pair;
  */
 public class SearchAlgorithms
 {
-    public static boolean depthFirst (Problem p, Object state, Object previousState) {
-        System.out.println(state);
-        if (p.isResolved(state)) {
-            System.out.println("Bingo");
-            return true;
-        }
-        List <Rule> rules = p.getRules(state);
-        for (Rule rule : rules) {
-            if (!rule.applyToState(state).equals(previousState)) {
-                if (depthFirst(p, rule.applyToState(state), state))
-                    return true;
+    public static void depthFirst(Problem p)
+    {
+        int i=0;
+        Stack<Object> stack = new Stack<>();
+        List<Object> visitedNodes = new ArrayList<>();
+        stack.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
+        
+        while(!stack.isEmpty() && !p.isResolved(stack.peek()))
+        {
+            Object tmpObj = stack.pop();
+            System.out.println(i);
+            System.out.println(tmpObj);
+            
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules)
+            {
+                Object currentState = rule.applyToState(tmpObj);
+                
+                if (!visitedNodes.contains(currentState))
+                {
+                    visitedNodes.add(currentState);
+                    stack.push(currentState);
+                    i++;
+                }
             }
         }
-        
-        return false;           
+        if (p.isResolved(stack.peek()))
+            System.out.println(stack.peek());
     }
     
     public static void breadthFirst(Problem p)
     {
         Queue<Object> queue = new LinkedList<Object>();
+        List<Object> visitedNodes = new ArrayList<>();
         queue.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
         
         while(!queue.isEmpty() && !p.isResolved(queue.element()))
         {   
@@ -54,8 +69,15 @@ public class SearchAlgorithms
             System.out.println(tmpObj);
             
             List<Rule>rules = p.getRules(tmpObj);
-            for (Rule rule : rules) {
-                queue.add(rule.applyToState(tmpObj));
+            for (Rule rule : rules) 
+            {
+                Object currentState = rule.applyToState(tmpObj);
+                
+                if (!visitedNodes.contains(currentState))
+                {
+                    visitedNodes.add(currentState);
+                    queue.add(currentState);
+                }
             }
         }
         
@@ -204,30 +226,45 @@ public class SearchAlgorithms
         return resolved;
     }
         
-    public static void iterativeDeepening (Problem p) {
+    public static void iterativeDeepening (Problem p) 
+    {
         Object actualState = p.getInitialState();
-        int maxDepth = 1;
-        while (!depthFirstLim(p, actualState, maxDepth) ) {
-            maxDepth ++;
-        }
-            
+        System.out.println(actualState);
+        int depth = 1;
+        int i = 1;
+        
+        while (!depthFirstLim(p, actualState, depth))
+            depth++;
+        
+        System.out.println("BINGO !!!");
     }
     
     //recursive algorithm used by iterative deepening
-    public static boolean depthFirstLim (Problem p, Object state, int limite) {
-        if (limite == 0)
-            return false;
-        System.out.println(state);
-        if (p.isResolved(state)) {
-            System.out.println("Bingo");
+    private static boolean depthFirstLim (Problem p, Object state, int depth) 
+    {   
+        if (p.isResolved(state))
+        {
+            System.out.println(state);
             return true;
         }
-        List <Rule> rules = p.getRules(state);
-        for (Rule rule : rules) {
-            if (depthFirstLim(p, rule.applyToState(state), limite - 1))
-                return true;
+        if (depth > 0)
+        {
+            List<Object> visitedNodes = new ArrayList<>();
+            visitedNodes.add(state);
+            List <Rule> rules = p.getRules(state);
+            for (Rule rule : rules) 
+            {
+                Object nextState = rule.applyToState(state);
+                if (!visitedNodes.contains(nextState))
+                {
+                    System.out.println(nextState);
+                    if (depthFirstLim(p, nextState, depth-1))
+                        return true;
+                }
+                if (depth == 1)
+                    visitedNodes.add(nextState);
+            }
         }
-        
         return false;           
     }
 }
