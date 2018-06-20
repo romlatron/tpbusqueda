@@ -13,10 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Stack;
-import java.util.TreeMap;
-//import javafx.util.Pair;
 
 
 /**
@@ -24,7 +23,7 @@ import java.util.TreeMap;
  * @author Kevin
  */
 public class SearchAlgorithms
-{   
+{
     public static void depthFirst(Problem p)
     {
         int i=0;
@@ -85,39 +84,62 @@ public class SearchAlgorithms
             System.out.println(queue.element());
     }
     
-    public static void greedySearch(Problem p)
+    public static void greedySearch(Problem p, Heuristic h)
     {
         Object currentState  = p.getInitialState();
         Object nextState;
-        double minRuleCost;
+        Rule applyRule;
+        double minScore;
+        boolean visited;
+        HashMap <Object, Object> visitedNodes = new HashMap<>();
+        visitedNodes.put(currentState, null);
         
-        while(!p.isResolved(currentState))
+        int i =0;
+        while(!p.isResolved(currentState))  
         {
-            System.out.println(currentState.toString());
-            List<Rule<Object>> rules = p.getRules(currentState);
-            minRuleCost = rules.get(0).getCost();
-            nextState = rules.get(0).applyToState(currentState);
+            i++;
+            System.out.print(h.getValue(currentState));
+            System.out.println(i);
             
-//            for (Rule<Object> rule : rules)
-//            {
-//                if (rule.getCost() < minRuleCost)
-//                {
-//                    minRuleCost = rule.getCost();
-//                    nextState = rule.applyToState(currentState);
-//                }
-//            }
-            int i = 1;
-            while (i < rules.size() && nextState.equals(currentState))
-            {
-                if (rules.get(i).getCost() <= minRuleCost)
-                {
-                    minRuleCost = rules.get(i).getCost();
-                    nextState = rules.get(i).applyToState(currentState);
+            List<Rule> rules = p.getRules(currentState);
+            applyRule = null;
+            minScore = Double.POSITIVE_INFINITY ;
+
+            for (Rule<Object> rule : rules)
+            {                
+                visited = false;
+                for (Object o : visitedNodes.keySet())
+                    if (o.equals(rule.applyToState(currentState))) visited = true;
+                if (!visited) {
+                    if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore)
+                    {
+                        minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
+                        applyRule = rule;
+                    }
                 }
                 i++;
             }
-            currentState = nextState;
+            if (applyRule != null) {
+                nextState = applyRule.applyToState(currentState);
+                visitedNodes.put(nextState, currentState);
+                currentState = nextState;
+            }
+            else {
+                currentState = visitedNodes.get(currentState);
+            }
         }
+        int profundidad = 0;
+        while (currentState != null) {
+            profundidad++;
+            System.out.println(currentState);
+            currentState = visitedNodes.get(currentState);
+        }
+        System.out.println(i);
+        System.out.println("Profundidad de la solucion : " + profundidad);
+        
+        int nExpandidos = 0;
+        nExpandidos = visitedNodes.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+        System.out.println("Nodos expandidos : " + nExpandidos);
     }
     
 //    public static boolean Astar(Problem p, Heuristic h)
@@ -170,6 +192,90 @@ public class SearchAlgorithms
 //        }
 //        return resolved;
 //    }
+    /*    
+    public static boolean iterativeDeepening (Problem p) 
+    {
+        Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
+        HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
+        boolean resolved = false;
+        Object initialState = p.getInitialState();
+        Object currentState, nextState, existingClosed;    
+        double currentCost, currentScore, nextCost, nextScore;
+        boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
+        openList.put(initialState, h.getValue(initialState));
+        int i = 0;
+        
+        while(!openList.isEmpty())
+        {   
+            i++;
+            Entry<Object, Double> min = null;
+            for (Entry<Object, Double> entry : openList.entrySet()) {
+                if (min == null || min.getValue() > entry.getValue()) {
+                    min = entry;
+                }
+            }
+            currentState = min.getKey();
+            System.out.println(currentState);
+            if (p.isResolved(currentState)) {
+                resolved = true;
+                break;
+            }
+            currentScore = min.getValue();
+            currentCost = min.getValue() - h.getValue(currentState); 
+            openList.remove(min.getKey());
+            System.out.println(currentScore + " " + h.getValue(currentState) + " " + i);
+            List <Rule> rules = p.getRules(currentState);
+            
+            for (Rule rule : rules) {
+            
+                visited = false;
+                waitingList = false;
+                existingClosed = null;
+                nextState = rule.applyToState(currentState);
+                nextCost = currentCost + rule.getCost();
+                nextScore =  nextCost + h.getValue(nextState);
+                
+                for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
+                    if (entry.getKey().equals(nextState)) {
+                        existingClosed = entry.getKey();
+                        visited = entry.getValue() <= nextScore;
+                        break;
+                    }
+                }
+                
+                if (!visited) {
+                
+                    Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
+                    while (ite.hasNext()) {
+                        Map.Entry<Object, Double> entry = ite.next();
+                        if (entry.getKey().equals(nextState)) {
+                            waitingList = entry.getValue()<= nextScore;
+                            if (!waitingList) ite.remove();
+                            break;
+                        }
+                    }
+
+                    if (!waitingList) {
+                        openList.put(nextState, nextScore);
+                        if (existingClosed != null) closedList.remove(existingClosed);
+                    }
+                }
+            }
+            closedList.put(currentState, currentScore);
+        }
+                
+        int nFrontera = 0;
+        nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+        System.out.println("Nodos frontera : " + nFrontera);
+        
+        int nExpandidos = 0;
+        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+        System.out.println("Nodos expandidos : " + nExpandidos);
+        
+        System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
+       
+        return resolved;
+    }*/
         
     public static void iterativeDeepening (Problem p) 
     {
@@ -180,14 +286,12 @@ public class SearchAlgorithms
         
         while (!depthFirstLim(p, actualState, depth))
             depth++;
-        
         System.out.println("BINGO !!!");
     }
     
     //recursive algorithm used by iterative deepening
     private static boolean depthFirstLim (Problem p, Object state, int depth) 
-    {   
-        //System.out.println(depth);
+    {
         if (p.isResolved(state))
         {
             System.out.println(state);

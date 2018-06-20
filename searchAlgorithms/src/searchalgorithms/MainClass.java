@@ -5,17 +5,11 @@
  */
 package searchalgorithms;
 
-import treetest.TreeState;
-import treetest.TreeRuleLeft;
-import treetest.TreeExample;
-import treetest.TreeRuleRight;
 import ar.com.itba.sia.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import RollingCubes.RollingCubes;
 import RollingCubes.State;
 import RollingCubes.ColorCubesHeuristic;
+import RollingCubes.ImprovedHeuristic;
 
 
 /**
@@ -29,22 +23,54 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        /*List <Rule> goLeftRight = new ArrayList<>();
-        goLeftRight.add(new TreeRuleLeft());
-        goLeftRight.add(new TreeRuleRight());
-        TreeState init = new TreeState (1, goLeftRight);
-        TreeState fin = new TreeState (6, goLeftRight);
-        TreeExample tree = new TreeExample (init, fin);
         
-        SearchAlgorithms.iterativeDeepening (tree);*/
-
         RollingCubes rc = new RollingCubes();
         State root = (State)rc.getInitialState();
-        Heuristic h = ColorCubesHeuristic.getInstance();
-        
-        //SearchAlgorithms.breadthFirst(rc);
-        List<Object> visitedNodes = new ArrayList<>();
-        SearchAlgorithms.iterativeDeepening(rc);
+        Heuristic h = ImprovedHeuristic.getInstance();
+        if (args.length==0) { 
+           // System.out.println(SearchAlgorithms.Astar(rc, h));
+            SearchAlgorithms.greedySearch(rc, h);
+        } else if (args.length == 1) {
+            switch(args[0]) {
+                case "DFS" :
+                    SearchAlgorithms.depthFirst(rc);
+                    break;
+                case "BFS" :
+                    SearchAlgorithms.breadthFirst(rc);
+                    break;
+                case "ID" :
+                    SearchAlgorithms.iterativeDeepening(rc);
+                    break;
+                default :
+                    System.out.println("Invalid method");
+                    break;
+            }
+        } else {
+            switch(args[1]) {
+                case "ImproveHeuristic" :
+                    h = ImprovedHeuristic.getInstance();
+                    break;
+                case "ColorCubesHeuristic" :
+                    h = ColorCubesHeuristic.getInstance();
+                    break;
+                default :
+                    System.out.println("Invalid heuristic");
+                    return;
+            }
+            switch(args[0]) {
+                /*case "AStar" :
+                    System.out.println(SearchAlgorithms.Astar(rc, h));
+                    break;*/
+                case "Greedy" :
+                    SearchAlgorithms.greedySearch(rc, h);
+                    break;
+                default :
+                    System.out.println("Invalid method");
+                    break;
+            }
+                
+        }
     }
+
     
 }
