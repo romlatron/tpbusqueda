@@ -29,8 +29,8 @@ public class MainClass {
         State root = (State)rc.getInitialState();
         Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 
-           // System.out.println(SearchAlgorithms.Astar(rc, h));
-            SearchAlgorithms.greedySearch(rc, h);
+           System.out.println(SearchAlgorithms.Astar(rc, h));
+            //SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {
             switch(args[0]) {
                 case "DFS" :

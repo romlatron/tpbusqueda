@@ -92,10 +92,10 @@ public class SearchAlgorithms
         Rule applyRule;
         double minScore;
         boolean visited;
-        HashMap <Object, Object> visitedNodes = new HashMap<>();
+        HashMap <Object, Object> visitedNodes = new LinkedHashMap<>();        
         visitedNodes.put(currentState, null);
-        
         int i =0;
+        
         while(!p.isResolved(currentState))  
         {
             i++;
@@ -110,10 +110,12 @@ public class SearchAlgorithms
             {                
                 visited = false;
                 for (Object o : visitedNodes.keySet())
-                    if (o.equals(rule.applyToState(currentState))) visited = true;
+                    if (o.equals(rule.applyToState(currentState))){
+                        visited = true;
+                        break;
+                    }
                 if (!visited) {
-                    if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore)
-                    {
+                    if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore){
                         minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
                         applyRule = rule;
                     }
@@ -122,7 +124,7 @@ public class SearchAlgorithms
             if (applyRule != null) {
                 nextState = applyRule.applyToState(currentState);
                 visitedNodes.put(nextState, currentState);
-                currentState = nextState;
+                currentState = nextState;                
             }
             else {
                 currentState = visitedNodes.get(currentState);
@@ -186,13 +188,13 @@ public class SearchAlgorithms
                 
                 for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
                     if (entry.getKey().equals(nextState)) {
-                        existingClosed = entry.getKey();
+                        existingClosed = entry.getKey(); //in case it has been visited with a higher score, we will have to replace it
                         visited = entry.getValue() <= nextScore;
                         break;
                     }
                 }
                 
-                if (!visited) {
+                if (!visited) { // check that the node isn't already in the waiting list with lower score
                 
                     Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
                     while (ite.hasNext()) {

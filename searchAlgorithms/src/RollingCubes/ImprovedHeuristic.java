@@ -63,7 +63,7 @@ public class ImprovedHeuristic implements Heuristic{
                             minCost = 9;
                         count += 3;
                     }
-                    else if (i == 3) {
+                    else if (i == 5) {
                         if (minCost < 12)
                             minCost = 12;
                         count += 4;
@@ -76,7 +76,7 @@ public class ImprovedHeuristic implements Heuristic{
                             minCost = 9;
                         count += 3;
                     }
-                    else if (i == 5) {
+                    else if (i == 3) {
                         if (minCost < 12)
                             minCost = 12;
                         count += 4;
