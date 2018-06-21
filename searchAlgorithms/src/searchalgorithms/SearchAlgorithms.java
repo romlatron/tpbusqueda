@@ -5,6 +5,7 @@
  */
 package searchalgorithms;
 
+import RollingCubes.State;
 import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Stack;
+
 
 
 /**
@@ -36,7 +38,7 @@ public class SearchAlgorithms
         {
             Object tmpObj = stack.pop();
             System.out.println(i);
-            System.out.println(tmpObj);
+            //System.out.println(tmpObj);
             
             List<Rule>rules = p.getRules(tmpObj);
             for (Rule rule : rules)
@@ -46,6 +48,10 @@ public class SearchAlgorithms
                 if (!visitedNodes.contains(currentState))
                 {
                     visitedNodes.add(currentState);
+                    
+                    if(currentState instanceof State)
+                        ((State) currentState).applySymmetry(visitedNodes);
+                        
                     stack.push(currentState);
                     i++;
                 }
@@ -75,11 +81,14 @@ public class SearchAlgorithms
                 if (!visitedNodes.contains(currentState))
                 {
                     visitedNodes.add(currentState);
+                    
+                    if(currentState instanceof State)
+                        ((State) currentState).applySymmetry(visitedNodes);
+                    
                     queue.add(currentState);
                 }
             }
         }
-        
         if (p.isResolved(queue.element()))
             System.out.println(queue.element());
     }
@@ -117,7 +126,6 @@ public class SearchAlgorithms
                         applyRule = rule;
                     }
                 }
-                i++;
             }
             if (applyRule != null) {
                 nextState = applyRule.applyToState(currentState);
@@ -142,58 +150,7 @@ public class SearchAlgorithms
         System.out.println("Nodos expandidos : " + nExpandidos);
     }
     
-//    public static boolean Astar(Problem p, Heuristic h)
-//    {
-//        Map<Double, Pair<Object, Double>> openList = new TreeMap<>(); //contains f(state) and g(state)
-//        HashMap<Object, Double> closedList = new LinkedHashMap<>(); 
-//        boolean resolved = false;
-//        Object initialState = p.getInitialState();
-//        openList.put(h.getValue(initialState), new Pair<> (initialState, 0.0));
-//        
-//        while(!openList.isEmpty())
-//        {            
-//            Map.Entry<Double, Pair<Object, Double>> pair = openList.entrySet().iterator().next();
-//            Object currentState = pair.getValue().getKey();
-//            if (p.isResolved(currentState)) {
-//                resolved = true;
-//                break;
-//            }
-//            double currentScore = pair.getKey();
-//            closedList.remove(pair);
-//            
-//            List <Rule> rules = p.getRules(currentState);
-//            for (Rule rule : rules) {
-//                
-//                Object nextState = rule.applyToState(currentState);
-//                double nextCost = pair.getValue().getValue() + rule.getCost();
-//                double nextScore = h.getValue(nextState);
-//                
-//                for (Map.Entry<Double, Pair<Object, Double>> entry : openList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
-//                    if (entry.getValue().getKey().equals(nextState)) {
-//                        if (entry.getKey() > currentScore) {
-//                            
-//                            for (Map.Entry<Object, Double> entryClosed : closedList.entrySet()) { //check the same with closed list
-//                                if (entryClosed.getKey().equals(currentState)) {
-//                                    if (entryClosed.getValue() > currentScore) {
-//                                        openList.remove(entry.getValue());
-//                                        openList.put(nextScore, new Pair<> (nextState, nextCost));
-//                                        closedList.remove(entryClosed.getKey());
-//                                        closedList.put(currentState, currentScore);
-//                                    }
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                        
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//        return resolved;
-//    }
-    /*    
-    public static boolean iterativeDeepening (Problem p) 
+    public static boolean Astar(Problem p, Heuristic h)
     {
         Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
         HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
@@ -275,7 +232,7 @@ public class SearchAlgorithms
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
        
         return resolved;
-    }*/
+    }
         
     public static void iterativeDeepening (Problem p) 
     {
@@ -286,12 +243,13 @@ public class SearchAlgorithms
         
         while (!depthFirstLim(p, actualState, depth))
             depth++;
+        
         System.out.println("BINGO !!!");
     }
     
     //recursive algorithm used by iterative deepening
     private static boolean depthFirstLim (Problem p, Object state, int depth) 
-    {
+    {   
         if (p.isResolved(state))
         {
             System.out.println(state);
@@ -312,11 +270,14 @@ public class SearchAlgorithms
                         return true;
                 }
                 if (depth == 1)
+                {
                     visitedNodes.add(nextState);
+                    
+                    if(nextState instanceof State)
+                        ((State) nextState).applySymmetry(visitedNodes);
+                }
             }
         }
         return false;           
     }
 }
-
-

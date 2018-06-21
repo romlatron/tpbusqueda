@@ -10,6 +10,8 @@ import RollingCubes.RollingCubes;
 import RollingCubes.State;
 import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -25,8 +27,9 @@ public class MainClass {
     {
         
         RollingCubes rc = new RollingCubes();
-        State root = (State)rc.getInitialState();
-        Heuristic h = ImprovedHeuristic.getInstance();
+        SearchAlgorithms.depthFirst(rc);
+        
+        /*Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 
            // System.out.println(SearchAlgorithms.Astar(rc, h));
             SearchAlgorithms.greedySearch(rc, h);
@@ -58,9 +61,9 @@ public class MainClass {
                     return;
             }
             switch(args[0]) {
-                /*case "AStar" :
+                case "AStar" :
                     System.out.println(SearchAlgorithms.Astar(rc, h));
-                    break;*/
+                    break;
                 case "Greedy" :
                     SearchAlgorithms.greedySearch(rc, h);
                     break;
@@ -69,8 +72,6 @@ public class MainClass {
                     break;
             }
                 
-        }
-    }
-
-    
+        }*/
+    }    
 }
