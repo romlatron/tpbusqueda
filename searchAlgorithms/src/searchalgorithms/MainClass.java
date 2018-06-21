@@ -6,11 +6,12 @@
 package searchalgorithms;
 
 import ar.com.itba.sia.*;
-
 import RollingCubes.RollingCubes;
 import RollingCubes.State;
 import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -26,8 +27,9 @@ public class MainClass {
     {
         
         RollingCubes rc = new RollingCubes();
-        State root = (State)rc.getInitialState();
-        Heuristic h = ImprovedHeuristic.getInstance();
+        SearchAlgorithms.depthFirst(rc);
+        
+        /*Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 
            System.out.println(SearchAlgorithms.Astar(rc, h));
             //SearchAlgorithms.greedySearch(rc, h);
@@ -70,9 +72,6 @@ public class MainClass {
                     break;
             }
                 
-        } 
-        
-    }
-
-    
+        }*/
+    }    
 }

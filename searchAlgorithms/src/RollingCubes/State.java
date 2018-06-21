@@ -44,6 +44,86 @@ public class State {
         
         this.rules = nextPossibleRules;
     }
+    
+    public State(State s)
+    {
+        this.board = new Cube[9];
+        for (int i=0; i<s.board.length; i++)
+            this.board[i] = new Cube(s.board[i].getCurrentColor());
+        
+        this.indexEmpty = s.indexEmpty;
+    }
+    
+    private void permutePosition(State state, int pos1, int pos2)
+    {
+        Cube tmp = state.board[pos1];
+        state.board[pos1] = state.board[pos2];
+        state.board[pos2] = tmp;
+    }
+    
+    private State applyVerticalSymmetry(State currentState)
+    {
+        State symmetricState = new State(currentState);
+        permutePosition(symmetricState, 0, 2);
+        permutePosition(symmetricState, 3, 5);
+        permutePosition(symmetricState, 6, 8);
+        
+        for (Cube c : symmetricState.getBoard())
+        {
+            switch(c.getCurrentColor())
+            {
+                case WLEFT:
+                    c.setCurrentColor(Cube.color.WRIGHT);
+                    break;
+                    
+                case WRIGHT:
+                    c.setCurrentColor(Cube.color.WLEFT);
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        return symmetricState;
+    }
+    
+    private State applyHorizontalSymmetry(State currentState)
+    {
+        State symmetricState = new State(currentState);
+        permutePosition(symmetricState, 0, 6);
+        permutePosition(symmetricState, 1, 7);
+        permutePosition(symmetricState, 2, 8);
+        
+        for (Cube c : symmetricState.getBoard())
+        {
+            switch(c.getCurrentColor())
+            {
+                case WDOWN:
+                    c.setCurrentColor(Cube.color.WUP);
+                    break;
+                    
+                case WUP:
+                    c.setCurrentColor(Cube.color.WDOWN);
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        return symmetricState;
+    }
+    
+    private State applyRotationalSymmetry(State currentState)
+    {
+        return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
+    }
+    
+    public void applySymmetry(List<Object> visitedNode)
+    {
+        visitedNode.add(applyHorizontalSymmetry(this));
+        visitedNode.add(applyVerticalSymmetry(this));
+        visitedNode.add(applyRotationalSymmetry(this));
+    }
 
     public List<Rule> getRules() { return rules; }
 

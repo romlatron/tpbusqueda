@@ -5,6 +5,7 @@
  */
 package searchalgorithms;
 
+import RollingCubes.State;
 import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class SearchAlgorithms
         {
             Object tmpObj = stack.pop();
             System.out.println(i);
-            System.out.println(tmpObj);
+            //System.out.println(tmpObj);
             
             List<Rule>rules = p.getRules(tmpObj);
             for (Rule rule : rules)
@@ -47,6 +48,10 @@ public class SearchAlgorithms
                 if (!visitedNodes.contains(currentState))
                 {
                     visitedNodes.add(currentState);
+                    
+                    if(currentState instanceof State)
+                        ((State) currentState).applySymmetry(visitedNodes);
+                        
                     stack.push(currentState);
                     i++;
                 }
@@ -76,11 +81,14 @@ public class SearchAlgorithms
                 if (!visitedNodes.contains(currentState))
                 {
                     visitedNodes.add(currentState);
+                    
+                    if(currentState instanceof State)
+                        ((State) currentState).applySymmetry(visitedNodes);
+                    
                     queue.add(currentState);
                 }
             }
         }
-        
         if (p.isResolved(queue.element()))
             System.out.println(queue.element());
     }
@@ -264,7 +272,12 @@ public class SearchAlgorithms
                         return true;
                 }
                 if (depth == 1)
+                {
                     visitedNodes.add(nextState);
+                    
+                    if(nextState instanceof State)
+                        ((State) nextState).applySymmetry(visitedNodes);
+                }
             }
         }
         return false;           
