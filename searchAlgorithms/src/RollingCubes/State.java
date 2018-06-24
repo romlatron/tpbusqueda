@@ -54,6 +54,8 @@ public class State {
         this.indexEmpty = s.indexEmpty;
     }
     
+    public State(Cube[] newBoard) { this.board = newBoard; }
+    
     private void permutePosition(State state, int pos1, int pos2)
     {
         Cube tmp = state.board[pos1];
@@ -61,7 +63,7 @@ public class State {
         state.board[pos2] = tmp;
     }
     
-    private State applyVerticalSymmetry(State currentState)
+    public State applyVerticalSymmetry(State currentState)
     {
         State symmetricState = new State(currentState);
         permutePosition(symmetricState, 0, 2);
@@ -87,7 +89,7 @@ public class State {
         return symmetricState;
     }
     
-    private State applyHorizontalSymmetry(State currentState)
+    public State applyHorizontalSymmetry(State currentState)
     {
         State symmetricState = new State(currentState);
         permutePosition(symmetricState, 0, 6);
@@ -113,16 +115,108 @@ public class State {
         return symmetricState;
     }
     
-    private State applyRotationalSymmetry(State currentState)
+    public State apply90ClockwiseRotation(State currentState)
+    {
+        Cube[] newBoard = new Cube[9];
+        newBoard[0] = new Cube(currentState.board[6].getCurrentColor());
+        newBoard[1] = new Cube(currentState.board[3].getCurrentColor());
+        newBoard[2] = new Cube(currentState.board[0].getCurrentColor());
+        newBoard[3] = new Cube(currentState.board[7].getCurrentColor());
+        newBoard[4] = new Cube(currentState.board[4].getCurrentColor());
+        newBoard[5] = new Cube(currentState.board[1].getCurrentColor());
+        newBoard[6] = new Cube(currentState.board[8].getCurrentColor());
+        newBoard[7] = new Cube(currentState.board[5].getCurrentColor());
+        newBoard[8] = new Cube(currentState.board[2].getCurrentColor());
+        
+        State symmetricState = new State(newBoard);
+        
+        for (Cube c : symmetricState.getBoard())
+        {
+            switch(c.getCurrentColor())
+            {
+                case WDOWN:
+                    c.setCurrentColor(Cube.color.WLEFT);
+                    break;
+                    
+                case WUP:
+                    c.setCurrentColor(Cube.color.WRIGHT);
+                    break;
+                    
+                case WLEFT:
+                    c.setCurrentColor(Cube.color.WUP);
+                    break;
+                    
+                case WRIGHT:
+                    c.setCurrentColor(Cube.color.WDOWN);
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        return symmetricState;
+    }
+    
+    public State apply90AnticlockwiseRotation(State currentState)
+    {
+        Cube[] newBoard = new Cube[9];
+        newBoard[0] = new Cube(currentState.board[2].getCurrentColor());
+        newBoard[1] = new Cube(currentState.board[5].getCurrentColor());
+        newBoard[2] = new Cube(currentState.board[8].getCurrentColor());
+        newBoard[3] = new Cube(currentState.board[1].getCurrentColor());
+        newBoard[4] = new Cube(currentState.board[4].getCurrentColor());
+        newBoard[5] = new Cube(currentState.board[7].getCurrentColor());
+        newBoard[6] = new Cube(currentState.board[0].getCurrentColor());
+        newBoard[7] = new Cube(currentState.board[3].getCurrentColor());
+        newBoard[8] = new Cube(currentState.board[6].getCurrentColor());
+        
+        State symmetricState = new State(newBoard);
+        
+        for (Cube c : symmetricState.getBoard())
+        {
+            switch(c.getCurrentColor())
+            {
+                case WDOWN:
+                    c.setCurrentColor(Cube.color.WRIGHT);
+                    break;
+                    
+                case WUP:
+                    c.setCurrentColor(Cube.color.WLEFT);
+                    break;
+                    
+                case WLEFT:
+                    c.setCurrentColor(Cube.color.WDOWN);
+                    break;
+                    
+                case WRIGHT:
+                    c.setCurrentColor(Cube.color.WUP);
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        return symmetricState;
+    }
+    
+    private State apply180Rotation(State currentState)
     {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
     
-    public void applySymmetry(List<Object> visitedNode)
+    public void applySymmetry(List<Object> symmetricNode)
     {
-        visitedNode.add(applyHorizontalSymmetry(this));
-        visitedNode.add(applyVerticalSymmetry(this));
-        visitedNode.add(applyRotationalSymmetry(this));
+        symmetricNode.add(applyHorizontalSymmetry(this));
+        symmetricNode.add(applyVerticalSymmetry(this));
+        symmetricNode.add(apply180Rotation(this));
+        
+        symmetricNode.add(apply90AnticlockwiseRotation(this));
+//        symmetricNode.add(applyHorizontalSymmetry(apply90AnticlockwiseRotation(this)));
+//        symmetricNode.add(applyVerticalSymmetry(apply90AnticlockwiseRotation(this)));
+//        
+        symmetricNode.add(apply90ClockwiseRotation(this));
+//        symmetricNode.add(applyHorizontalSymmetry(apply90ClockwiseRotation(this)));
+//        symmetricNode.add(applyVerticalSymmetry(apply90ClockwiseRotation(this)));
     }
 
     public List<Rule> getRules() { return rules; }
@@ -131,9 +225,11 @@ public class State {
     
     public int getIndexEmpty() { return indexEmpty; }
     
-    @Override
+//    @Override
     public boolean equals(Object object) {
-        if (object == null) return false;
+        if (object == null) 
+            return false;
+        
         State s = (State) object;
         for (int i = 0; i<9; i++) {
             if (this.board[i].getCurrentColor() != s.getBoard()[i].getCurrentColor())
@@ -141,6 +237,22 @@ public class State {
         }
         return true;
     }
+    
+//    @Override
+//    public boolean equals(Object object) {
+//        if (object == null) 
+//            return false;
+//        
+//        State s = (State) object;
+//        List<Object> symmetricStates = new ArrayList<>();
+//        s.applySymmetry(symmetricStates);
+//        
+//        for (int i = 0; i<symmetricStates.size(); i++) 
+//            if (this.sameBoard(symmetricStates.get(i)))
+//                return true;
+//                
+//        return false;
+//    }
 
     @Override
     public int hashCode() {

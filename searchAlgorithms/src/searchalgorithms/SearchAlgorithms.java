@@ -63,6 +63,7 @@ public class SearchAlgorithms
     
     public static void breadthFirst(Problem p)
     {
+        int i = 0;
         Queue<Object> queue = new LinkedList<Object>();
         List<Object> visitedNodes = new ArrayList<>();
         queue.add(p.getInitialState());
@@ -71,7 +72,7 @@ public class SearchAlgorithms
         while(!queue.isEmpty() && !p.isResolved(queue.element()))
         {   
             Object tmpObj = queue.poll();
-            System.out.println(tmpObj);
+            System.out.println(i);
             
             List<Rule>rules = p.getRules(tmpObj);
             for (Rule rule : rules) 
@@ -86,6 +87,7 @@ public class SearchAlgorithms
                         ((State) currentState).applySymmetry(visitedNodes);
                     
                     queue.add(currentState);
+                    i++;
                 }
             }
         }
