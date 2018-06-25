@@ -61,7 +61,7 @@ public class State {
         state.board[pos2] = tmp;
     }
     
-    private State applyVerticalSymmetry(State currentState)
+    public State applyVerticalSymmetry(State currentState)
     {
         State symmetricState = new State(currentState);
         permutePosition(symmetricState, 0, 2);
@@ -87,7 +87,7 @@ public class State {
         return symmetricState;
     }
     
-    private State applyHorizontalSymmetry(State currentState)
+    public State applyHorizontalSymmetry(State currentState)
     {
         State symmetricState = new State(currentState);
         permutePosition(symmetricState, 0, 6);
@@ -113,7 +113,7 @@ public class State {
         return symmetricState;
     }
     
-    private State applyRotationalSymmetry(State currentState)
+    public State applyRotationalSymmetry(State currentState)
     {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
@@ -131,6 +131,14 @@ public class State {
     
     public int getIndexEmpty() { return indexEmpty; }
     
+    private boolean sameBoard (State state) {
+        for (int i = 0; i<9; i++) {
+            if (this.board[i].getCurrentColor() != state.getBoard()[i].getCurrentColor())
+                return false;
+        }
+        return true;
+    }
+    
     @Override
     public boolean equals(Object object) {
         if (object == null) return false;
@@ -141,7 +149,9 @@ public class State {
         }
         return true;
     }
-
+    public State(Cube[] newBoard) { this.board = newBoard; }
+    
+    
     @Override
     public int hashCode() {
         int hash = 7;

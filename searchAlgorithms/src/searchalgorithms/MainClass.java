@@ -7,7 +7,7 @@ package searchalgorithms;
 
 import ar.com.itba.sia.*;
 import RollingCubes.RollingCubes;
-import RollingCubes.State;
+import RollingCubes.*;
 import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
 import java.util.ArrayList;
@@ -27,12 +27,13 @@ public class MainClass {
     {
         
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.depthFirst(rc);
         
-        /*Heuristic h = ImprovedHeuristic.getInstance();
+        Heuristic h = ImprovedHeuristic.getInstance();
+        
         if (args.length==0) { 
-           System.out.println(SearchAlgorithms.Astar(rc, h));
-            //SearchAlgorithms.greedySearch(rc, h);
+            //SearchAlgorithms.depthFirst(rc);
+          // System.out.println(SearchAlgorithms.Astar(rc, h));
+          SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {
             switch(args[0]) {
                 case "DFS" :
@@ -72,6 +73,6 @@ public class MainClass {
                     break;
             }
                 
-        }*/
+        }
     }    
 }

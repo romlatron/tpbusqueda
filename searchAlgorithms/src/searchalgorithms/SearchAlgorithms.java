@@ -37,7 +37,7 @@ public class SearchAlgorithms
         while(!stack.isEmpty() && !p.isResolved(stack.peek()))
         {
             Object tmpObj = stack.pop();
-            System.out.println(i);
+            //System.out.println(i);
             //System.out.println(tmpObj);
             
             List<Rule>rules = p.getRules(tmpObj);
@@ -49,9 +49,9 @@ public class SearchAlgorithms
                 {
                     visitedNodes.add(currentState);
                     
-                    if(currentState instanceof State)
+                    /*if(currentState instanceof State)
                         ((State) currentState).applySymmetry(visitedNodes);
-                        
+                        */
                     stack.push(currentState);
                     i++;
                 }
@@ -107,8 +107,8 @@ public class SearchAlgorithms
         while(!p.isResolved(currentState))  
         {
             i++;
-            System.out.print(h.getValue(currentState));
-            System.out.println(i);
+            //System.out.print(h.getValue(currentState));
+            //System.out.println(i);
             
             List<Rule> rules = p.getRules(currentState);
             applyRule = null;
@@ -122,6 +122,7 @@ public class SearchAlgorithms
                         visited = true;
                         break;
                     }
+                
                 if (!visited) {
                     if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore){
                         minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
@@ -132,6 +133,10 @@ public class SearchAlgorithms
             if (applyRule != null) {
                 nextState = applyRule.applyToState(currentState);
                 visitedNodes.put(nextState, currentState);
+                visitedNodes.put(((State)(nextState)).applyHorizontalSymmetry((State)nextState), null);
+                visitedNodes.put(((State)(nextState)).applyVerticalSymmetry((State)nextState), null);
+                visitedNodes.put(((State)(nextState)).applyRotationalSymmetry((State)nextState), null);
+                
                 currentState = nextState;                
             }
             else {
@@ -158,7 +163,8 @@ public class SearchAlgorithms
         HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
         boolean resolved = false;
         Object initialState = p.getInitialState();
-        Object currentState, nextState, existingClosed;    
+        Object currentState = null;
+        Object nextState, existingClosed;    
         double currentCost, currentScore, nextCost, nextScore;
         boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
         openList.put(initialState, h.getValue(initialState));
@@ -168,13 +174,13 @@ public class SearchAlgorithms
         {   
             i++;
             Entry<Object, Double> min = null;
-            for (Entry<Object, Double> entry : openList.entrySet()) {
+            for (Entry<Object, Double> entry : openList.entrySet()) { //we select the node with smallest score in the waiting list
                 if (min == null || min.getValue() > entry.getValue()) {
                     min = entry;
                 }
             }
             currentState = min.getKey();
-            System.out.println(currentState);
+            //System.out.println(currentState);
             if (p.isResolved(currentState)) {
                 resolved = true;
                 break;
@@ -182,7 +188,7 @@ public class SearchAlgorithms
             currentScore = min.getValue();
             currentCost = min.getValue() - h.getValue(currentState); 
             openList.remove(min.getKey());
-            System.out.println(currentScore + " " + h.getValue(currentState) + " " + i);
+           // System.out.println(currentScore + " " + h.getValue(currentState) + " " + i);
             List <Rule> rules = p.getRules(currentState);
             
             for (Rule rule : rules) {
@@ -207,7 +213,10 @@ public class SearchAlgorithms
                     Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
                     while (ite.hasNext()) {
                         Map.Entry<Object, Double> entry = ite.next();
-                        if (entry.getKey().equals(nextState)) {
+                        if (entry.getKey().equals(nextState) 
+                                || entry.getKey().equals(((State)(nextState)).applyHorizontalSymmetry((State)nextState))
+                                ||entry.getKey().equals(((State)(nextState)).applyRotationalSymmetry((State)nextState))
+                                ||entry.getKey().equals(((State)(nextState)).applyVerticalSymmetry((State)nextState))) {
                             waitingList = entry.getValue()<= nextScore;
                             if (!waitingList) ite.remove();
                             break;
@@ -220,7 +229,11 @@ public class SearchAlgorithms
                     }
                 }
             }
+                
             closedList.put(currentState, currentScore);
+            closedList.put(((State)(currentState)).applyHorizontalSymmetry((State)currentState), currentScore);
+            closedList.put(((State)(currentState)).applyVerticalSymmetry((State)currentState), currentScore);
+            closedList.put(((State)(currentState)).applyRotationalSymmetry((State)currentState), currentScore);
         }
                 
         int nFrontera = 0;
@@ -228,11 +241,11 @@ public class SearchAlgorithms
         System.out.println("Nodos frontera : " + nFrontera);
         
         int nExpandidos = 0;
-        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+        nExpandidos = closedList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
         System.out.println("Nodos expandidos : " + nExpandidos);
         
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
-       
+        
         return resolved;
     }
         
