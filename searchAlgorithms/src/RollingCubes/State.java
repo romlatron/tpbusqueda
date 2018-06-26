@@ -204,19 +204,22 @@ public class State {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
     
-    public void applySymmetry(List<Object> symmetricNode)
-    {
-        symmetricNode.add(applyHorizontalSymmetry(this));
-        symmetricNode.add(applyVerticalSymmetry(this));
-        symmetricNode.add(apply180Rotation(this));
-        
-        symmetricNode.add(apply90AnticlockwiseRotation(this));
+    public List<State> applySymmetry(State s)
+    {  
+        List symmetricNode = new ArrayList<>();
+
+        symmetricNode.add(s);
+        symmetricNode.add(applyHorizontalSymmetry(s));
+        symmetricNode.add(applyVerticalSymmetry(s));
+        symmetricNode.add(apply180Rotation(s));
+        symmetricNode.add(apply90AnticlockwiseRotation(s));
 //        symmetricNode.add(applyHorizontalSymmetry(apply90AnticlockwiseRotation(this)));
 //        symmetricNode.add(applyVerticalSymmetry(apply90AnticlockwiseRotation(this)));
 //        
-        symmetricNode.add(apply90ClockwiseRotation(this));
+        symmetricNode.add(apply90ClockwiseRotation(s));
 //        symmetricNode.add(applyHorizontalSymmetry(apply90ClockwiseRotation(this)));
 //        symmetricNode.add(applyVerticalSymmetry(apply90ClockwiseRotation(this)));
+        return symmetricNode;
     }
 
     public List<Rule> getRules() { return rules; }
@@ -226,7 +229,7 @@ public class State {
     public int getIndexEmpty() { return indexEmpty; }
     
 //    @Override
-    public boolean equals(Object object) {
+    public boolean strictEquals(Object object) {
         if (object == null) 
             return false;
         
@@ -236,6 +239,19 @@ public class State {
                 return false;
         }
         return true;
+    }
+    
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) 
+            return false;
+        
+        State s = (State) object;
+
+        for(State symmetricState: applySymmetry(s)) {
+            if (symmetricState.strictEquals(this)) return true;
+        }
+        return false;
     }
     
 //    @Override
@@ -257,8 +273,18 @@ public class State {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + Arrays.deepHashCode(this.board);
-        return hash;
+        int sum = 0;
+        int[] primes = {2, 3, 5, 7, 11, 13, 17, 19, 23};
+        
+        for(State symmetricState: applySymmetry(this)) {
+            int partialSum = 0;
+            for (int i = 0; i<9; i++) {
+                partialSum += primes[i] ^ symmetricState.getBoard()[i].hashCode();
+            }
+            sum += partialSum;
+        }
+        
+        return sum;
     }
     
     @Override

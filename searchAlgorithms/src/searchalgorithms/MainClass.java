@@ -27,9 +27,9 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        SokobanProblem sp = new SokobanProblem("input4.txt");
-        //RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.Astar(sp, new SokobanDistanceHeuristic());
+        //SokobanProblem sp = new SokobanProblem("input4.txt");
+        RollingCubes rc = new RollingCubes();
+        SearchAlgorithms.breadthFirst(rc);
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);
