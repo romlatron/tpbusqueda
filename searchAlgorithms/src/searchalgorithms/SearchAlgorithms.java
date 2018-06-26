@@ -7,6 +7,7 @@ package searchalgorithms;
 
 import ar.com.itba.sia.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,9 @@ public class SearchAlgorithms
     
     private static class Result {
         public int depth = 0;
+        public double heuristicCost = -1;
+        public double cost = 0;
+        public Result parent = null;
         public Object node;
         
         public Result (Result result) {
@@ -39,6 +44,11 @@ public class SearchAlgorithms
         public Result (Object node) {
             this.depth = depth;
             this.node = node;
+        }
+        
+        public Result (Object node, double heuristicCost) {
+            this.node = node;
+            this.heuristicCost = heuristicCost;
         }
         
         public Result (Object node, int depth) {
@@ -136,146 +146,84 @@ public class SearchAlgorithms
     
     public static void greedySearch(Problem p, Heuristic h)
     {
-        Object currentState  = p.getInitialState();
-        Object nextState;
-        Rule applyRule;
-        double minScore;
-        boolean visited;
-        HashMap <Object, Object> visitedNodes = new HashMap<>();
-        visitedNodes.put(currentState, null);
-        
-        int i =0;
-        while(!p.isResolved(currentState))  
-        {
-            i++;
-            System.out.print(h.getValue(currentState));
-            System.out.println(i);
-            
-            List<Rule> rules = p.getRules(currentState);
-            applyRule = null;
-            minScore = Double.POSITIVE_INFINITY ;
+        int exploded = 0;
+        PriorityQueue<Result> frontier = new PriorityQueue<>(Comparator.comparingDouble(n -> n.heuristicCost));
+        Map<Result, Integer> nodeDepths = new HashMap<>();
+        long startTime = System.nanoTime();
+        frontier.add(new Result(p.getInitialState(), h.getValue(p.getInitialState())));
 
-            for (Rule<Object> rule : rules)
-            {                
-                visited = false;
-                for (Object o : visitedNodes.keySet())
-                    if (o.equals(rule.applyToState(currentState))) visited = true;
-                if (!visited) {
-                    if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore)
-                    {
-                        minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
-                        applyRule = rule;
+        while(!frontier.isEmpty())
+        {   
+            Result parentState = frontier.remove();
+            nodeDepths.put(parentState, parentState.depth);
+            exploded++;
+            
+            List<Rule> rules = p.getRules(parentState.node);
+            for (Rule rule : rules) {
+                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
+                currentState.heuristicCost = h.getValue(currentState.node);
+                currentState.cost = parentState.cost + rule.getCost();
+                currentState.parent = parentState;
+                
+                Integer oldDepth = nodeDepths.get(currentState);
+                
+                if (oldDepth == null || oldDepth > currentState.depth) {
+                    frontier.add(currentState);
+                    if (p.isResolved((currentState.node))) {
+                        long estimatedTime = System.nanoTime() - startTime;
+                        System.out.println(currentState.node);
+                        System.out.println("Nodos frontera: " + frontier.size());
+                        System.out.println("Nodos Explotados: " + exploded);
+                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
+                        System.out.println("Profundidad: " + currentState.depth);
+                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+                        // TODO: Check generated nodes
+                        return;
                     }
                 }
             }
-            if (applyRule != null) {
-                nextState = applyRule.applyToState(currentState);
-                visitedNodes.put(nextState, currentState);
-                currentState = nextState;
-            }
-            else {
-                currentState = visitedNodes.get(currentState);
-            }
         }
-        int profundidad = 0;
-        while (currentState != null) {
-            profundidad++;
-            System.out.println(currentState);
-            currentState = visitedNodes.get(currentState);
-        }
-        System.out.println(i);
-        System.out.println("Profundidad de la solucion : " + profundidad);
-        
-        int nExpandidos = 0;
-        nExpandidos = visitedNodes.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
-        System.out.println("Nodos expandidos : " + nExpandidos);
     }
     
-    public static boolean Astar(Problem p, Heuristic h)
+    public static void Astar(Problem p, Heuristic h)
     {
-        Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
-        HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
-        boolean resolved = false;
-        Object initialState = p.getInitialState();
-        Object currentState = p.getInitialState();
-        Object nextState, existingClosed;    
-        double currentCost, currentScore, nextCost, nextScore;
-        boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
-        openList.put(initialState, h.getValue(initialState));
-        int nExpandidos = 0;
-        int i = 0;
-        
-        while(!openList.isEmpty())
+        int exploded = 0;
+        PriorityQueue<Result> frontier = new PriorityQueue<>(Comparator.comparingDouble(n -> n.heuristicCost + n.cost));
+        Map<Result, Integer> nodeDepths = new HashMap<>();
+        long startTime = System.nanoTime();
+        frontier.add(new Result(p.getInitialState(), h.getValue(p.getInitialState())));
+
+        while(!frontier.isEmpty())
         {   
-            i++;
-            Entry<Object, Double> min = null;
-            for (Entry<Object, Double> entry : openList.entrySet()) {
-                if (min == null || min.getValue() > entry.getValue()) {
-                    min = entry;
-                }
-            }
-            currentState = min.getKey();
-            if (p.isResolved(currentState)) {
-                resolved = true;
-                break;
-            }
-            currentScore = min.getValue();
-            currentCost = min.getValue() - h.getValue(currentState); 
-            openList.remove(min.getKey());
-            nExpandidos++;
-            List <Rule> rules = p.getRules(currentState);
+            Result parentState = frontier.remove();
+            nodeDepths.put(parentState, parentState.depth);
+            exploded++;
             
+            List<Rule> rules = p.getRules(parentState.node);
             for (Rule rule : rules) {
-            
-                visited = false;
-                waitingList = false;
-                existingClosed = null;
-                nextState = rule.applyToState(currentState);
-                nextCost = currentCost + rule.getCost();
-                nextScore =  nextCost + h.getValue(nextState);
+                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
+                currentState.heuristicCost = h.getValue(currentState.node);
+                currentState.cost = parentState.cost + rule.getCost();
+                currentState.parent = parentState;
                 
-                for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
-                    if (entry.getKey().equals(nextState)) {
-                        existingClosed = entry.getKey();
-                        visited = entry.getValue() <= nextScore;
-                        break;
-                    }
-                }
+                Integer oldDepth = nodeDepths.get(currentState);
                 
-                if (!visited) {
-                
-                    Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
-                    while (ite.hasNext()) {
-                        Map.Entry<Object, Double> entry = ite.next();
-                        if (entry.getKey().equals(nextState)) {
-                            waitingList = entry.getValue()<= nextScore;
-                            if (!waitingList) ite.remove();
-                            break;
-                        }
-                    }
-
-                    if (!waitingList) {
-                        openList.put(nextState, nextScore);
-                        if (existingClosed != null) closedList.remove(existingClosed);
+                if (oldDepth == null || oldDepth > currentState.depth) {
+                    frontier.add(currentState);
+                    if (p.isResolved((currentState.node))) {
+                        long estimatedTime = System.nanoTime() - startTime;
+                        System.out.println(currentState.node);
+                        System.out.println("Nodos frontera: " + frontier.size());
+                        System.out.println("Nodos Explotados: " + exploded);
+                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
+                        System.out.println("Profundidad: " + currentState.depth);
+                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+                        // TODO: Check generated nodes
+                        return;
                     }
                 }
             }
-
-            closedList.put(currentState, currentScore);
         }
-                
-        int nFrontera = 0;
-        nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
-        System.out.println("Nodos frontera : " + nFrontera);
-        
-        
-//        int nExpandidos = 0;
-//        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
-        System.out.println("Nodos expandidos : " + nExpandidos);
-        
-        System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
-       
-        return resolved;
     }
         
     public static void iterativeDeepening (Problem p) 
