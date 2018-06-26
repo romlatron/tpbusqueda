@@ -13,7 +13,6 @@ import RollingCubes.ImprovedHeuristic;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  *
  * @author Kevin
@@ -27,8 +26,9 @@ public class MainClass {
     {
         
         RollingCubes rc = new RollingCubes();
+//        SearchAlgorithms.depthFirst(rc);
         
-        Heuristic h = ImprovedHeuristic.getInstance();
+        Heuristic h = ImprovedHeuristic.getInstance();/*
         Object s = rc.getInitialState();
         System.out.println(((State)s).hashBoard());
         
@@ -45,9 +45,9 @@ public class MainClass {
                 
         System.out.println(((State)(s2)).applyVerticalSymmetry((State)s2).hashBoard());
         System.out.println(((State)(s2)).applyHorizontalSymmetry((State)s2).hashBoard());
-        System.out.println(((State)(s2)).applyRotationalSymmetry((State)s2).hashBoard());
+        System.out.println(((State)(s2)).applyRotationalSymmetry((State)s2).hashBoard());*/
         if (args.length==0) { 
-            //SearchAlgorithms.depthFirst(rc);
+            SearchAlgorithms.depthFirst(rc);
           // System.out.println(SearchAlgorithms.Astar(rc, h));
           //SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {

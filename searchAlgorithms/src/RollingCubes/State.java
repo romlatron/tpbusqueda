@@ -54,6 +54,8 @@ public class State {
         this.indexEmpty = s.indexEmpty;
     }
     
+    public State(Cube[] newBoard) { this.board = newBoard; }
+    
     private void permutePosition(State state, int pos1, int pos2)
     {
         Cube tmp = state.board[pos1];
@@ -112,17 +114,22 @@ public class State {
         }
         return symmetricState;
     }
-    
-    public State applyRotationalSymmetry(State currentState)
+ 
+    private State apply180Rotation(State currentState)
     {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
     
-    public void applySymmetry(List<Object> visitedNode)
-    {
-        visitedNode.add(applyHorizontalSymmetry(this));
-        visitedNode.add(applyVerticalSymmetry(this));
-        visitedNode.add(applyRotationalSymmetry(this));
+    public List<State> applySymmetry(State s)
+    {  
+        List symmetricNode = new ArrayList<>();
+
+        symmetricNode.add(s);
+        symmetricNode.add(applyHorizontalSymmetry(s));
+        symmetricNode.add(applyVerticalSymmetry(s));
+        symmetricNode.add(apply180Rotation(s));
+        
+        return symmetricNode;
     }
 
     public List<Rule> getRules() { return rules; }
@@ -131,17 +138,9 @@ public class State {
     
     public int getIndexEmpty() { return indexEmpty; }
     
-    private boolean sameBoard (State state) {
-        for (int i = 0; i<9; i++) {
-            if (this.board[i].getCurrentColor() != state.getBoard()[i].getCurrentColor())
-                return false;
-        }
-        return true;
-    }
-    
-    @Override
-    public boolean equals(Object object) {
-        if (object == null) return false;
+    public boolean strictEquals(Object object) {
+        if (object == null) 
+            return false;
         State s = (State) object;
         for (int i = 0; i<9; i++) {
             if (this.board[i].getCurrentColor() != s.getBoard()[i].getCurrentColor())
@@ -149,36 +148,69 @@ public class State {
         }
         return true;
     }
-    public State(Cube[] newBoard) { this.board = newBoard; }
+
     
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) 
+            return false;
+        
+        State s = (State) object;
+
+        for(State symmetricState: applySymmetry(s)) {
+            if (symmetricState.strictEquals(this)) return true;
+        }
+        return false;
+    }
+    
+//    @Override
+//    public boolean equals(Object object) {
+//        if (object == null) 
+//            return false;
+//        
+//        State s = (State) object;
+//        List<Object> symmetricStates = new ArrayList<>();
+//        s.applySymmetry(symmetricStates);
+//        
+//        for (int i = 0; i<symmetricStates.size(); i++) 
+//            if (this.sameBoard(symmetricStates.get(i)))
+//                return true;
+//                
+//        return false;
+//    }
+    
+    public State applyRotationalSymmetry(State currentState)
+    {
+        return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
+    }
+
     public int hashBoard() {
         int hash = 0;
         for (int i=0; i<9; i++)
             switch(this.board[i].getCurrentColor())
             {
                 case WDOWN:
-                    hash += 7*i*1;
-                    break;
-                    
+                    hash += Math.pow(7,i)*1;
+                    break;                    
                 case WUP:
-                    hash += 7*i*2;
+                    hash += Math.pow(7,i)*2;
                     break;
                     
                 case WLEFT:
-                    hash += 7*i*3;
+                    hash += Math.pow(7,i)*3;
                     break;
                     
                 case WRIGHT:
-                    hash += 7*i*4;
+                    hash += Math.pow(7,i)*4;
                     break;
                 case WHITE:
-                    hash += 7*i*5;
+                    hash += Math.pow(7,i)*5;
                     break;
                 case BLACK:
-                    hash += 7*i*6;
+                    hash += Math.pow(7,i)*6;
                     break;
                 case EMPTY:
-                    hash += 7*i*0;
+                    hash += Math.pow(7,i)*0;
                     break;    
                 default:
                     break;
@@ -189,10 +221,10 @@ public class State {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + this.hashBoard()
+        hash = 41 * hash + this.hashBoard();/*
                 + applyHorizontalSymmetry(this).hashBoard()
                 + applyVerticalSymmetry(this).hashBoard()
-                + applyRotationalSymmetry(this).hashBoard();
+                + applyRotationalSymmetry(this).hashBoard();*/
         return hash;
     }
     
