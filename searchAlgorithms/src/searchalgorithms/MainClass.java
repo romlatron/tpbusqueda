@@ -29,11 +29,28 @@ public class MainClass {
         RollingCubes rc = new RollingCubes();
         
         Heuristic h = ImprovedHeuristic.getInstance();
+        Object s = rc.getInitialState();
+        System.out.println(s.hashCode());
         
+        System.out.println(((State)(s)).applyVerticalSymmetry((State)s).hashCode());
+        System.out.println(((State)(s)).applyHorizontalSymmetry((State)s).hashCode());
+        System.out.println(((State)(s)).applyRotationalSymmetry((State)s).hashCode());
+        ClickUp up = new ClickUp();
+        
+        System.out.println("--------------------");
+
+        Object s2 = up.applyToState(s);
+        
+        System.out.println(s2.hashCode());
+        
+        
+        System.out.println(((State)(s2)).applyVerticalSymmetry((State)s2).hashCode());
+        System.out.println(((State)(s2)).applyHorizontalSymmetry((State)s2).hashCode());
+        System.out.println(((State)(s2)).applyRotationalSymmetry((State)s2).hashCode());
         if (args.length==0) { 
             //SearchAlgorithms.depthFirst(rc);
           // System.out.println(SearchAlgorithms.Astar(rc, h));
-          SearchAlgorithms.greedySearch(rc, h);
+          //SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {
             switch(args[0]) {
                 case "DFS" :

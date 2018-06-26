@@ -151,11 +151,48 @@ public class State {
     }
     public State(Cube[] newBoard) { this.board = newBoard; }
     
+    public int hashBoard() {
+        int hash = 0;
+        for (int i=0; i<9; i++)
+            switch(this.board[i].getCurrentColor())
+            {
+                case WDOWN:
+                    hash += 7*i*1;
+                    break;
+                    
+                case WUP:
+                    hash += 7*i*2;
+                    break;
+                    
+                case WLEFT:
+                    hash += 7*i*3;
+                    break;
+                    
+                case WRIGHT:
+                    hash += 7*i*4;
+                    break;
+                case WHITE:
+                    hash += 7*i*5;
+                    break;
+                case BLACK:
+                    hash += 7*i*6;
+                    break;
+                case EMPTY:
+                    hash += 7*i*0;
+                    break;    
+                default:
+                    break;
+            }
+        return hash;
+    }
     
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + Arrays.deepHashCode(this.board);
+        hash = 41 * hash + this.hashBoard()
+                + applyHorizontalSymmetry(this).hashBoard()
+                + applyVerticalSymmetry(this).hashBoard()
+                + applyRotationalSymmetry(this).hashBoard();
         return hash;
     }
     

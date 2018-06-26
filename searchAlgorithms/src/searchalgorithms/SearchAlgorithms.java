@@ -146,7 +146,7 @@ public class SearchAlgorithms
         int profundidad = 0;
         while (currentState != null) {
             profundidad++;
-            System.out.println(currentState);
+            //System.out.println(currentState);
             currentState = visitedNodes.get(currentState);
         }
         System.out.println(i);
