@@ -5,7 +5,6 @@
  */
 package searchalgorithms;
 
-import RollingCubes.State;
 import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -26,6 +26,40 @@ import java.util.Stack;
  */
 public class SearchAlgorithms
 {
+    
+    private static class Result {
+        public int depth = 0;
+        public Object node;
+        
+        public Result (Result result) {
+            this.depth = result.depth;
+            this.node = result.node;
+        }
+        
+        public Result (Object node) {
+            this.depth = depth;
+            this.node = node;
+        }
+        
+        public Result (Object node, int depth) {
+            this.depth = depth;
+            this.node = node;
+        }
+        
+        public boolean equals(Object o) {
+            Result r = (Result) o;
+            return r.node.equals(node);
+        }
+        
+        public String toString() {
+            return node.toString();
+        }
+        
+        public int hashCode() {
+            return node.hashCode();
+        }
+    }
+            
     public static void depthFirst(Problem p)
     {
         int i=0;
@@ -52,9 +86,6 @@ public class SearchAlgorithms
                 {
                     visitedNodes.add(currentState);
                     
-                    if(currentState instanceof State)
-                        ((State) currentState).applySymmetry(visitedNodes);
-                        
                     stack.push(currentState);
                     i++;
                 }
@@ -66,39 +97,39 @@ public class SearchAlgorithms
     
     public static void breadthFirst(Problem p)
     {
-        int i = 0;
-        int exploredNodes = 0;
-        int frontierNodes = 0;
-        
-        Queue<Object> queue = new LinkedList<>();
-        List<Object> visitedNodes = new ArrayList<>();
-        queue.add(p.getInitialState());
-        visitedNodes.add(p.getInitialState());
-        
-        while(!queue.isEmpty() && !p.isResolved(queue.element()))
+        int exploded = 0;
+        Queue<Result> frontier = new LinkedList<>();
+        Map<Result, Integer> nodeDepths = new HashMap<>();
+        long startTime = System.nanoTime();
+        frontier.add(new Result(p.getInitialState()));
+
+        while(!frontier.isEmpty())
         {   
-            Object tmpObj = queue.poll();
-            System.out.println(i);
+            Result parentState = frontier.poll();
+            nodeDepths.put(parentState, parentState.depth);
+            exploded++;
             
-            List<Rule>rules = p.getRules(tmpObj);
-            for (Rule rule : rules) 
-            {
-                Object currentState = rule.applyToState(tmpObj);
+            List<Rule> rules = p.getRules(parentState.node);
+            for (Rule rule : rules) {
+                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
+                Integer newDepth = nodeDepths.get(currentState);
                 
-                if (!visitedNodes.contains(currentState))
-                {
-                    visitedNodes.add(currentState);
-                    
-                    if(currentState instanceof State)
-                        ((State) currentState).applySymmetry(visitedNodes);
-                    
-                    queue.add(currentState);
-                    i++;
+                if (newDepth == null || newDepth > currentState.depth) {
+                    frontier.add(currentState);
+                    if (p.isResolved((currentState.node))) {
+                        long estimatedTime = System.nanoTime() - startTime;
+                        System.out.println(currentState.node);
+                        System.out.println("Nodos frontera: " + frontier.size());
+                        System.out.println("Nodos Explotados: " + exploded);
+                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
+                        System.out.println("Profundidad: " + currentState.depth);
+                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+                        // TODO: Check generated nodes
+                        return;
+                    }
                 }
             }
         }
-        if (p.isResolved(queue.element()))
-            System.out.println(queue.element());
     }
     
     public static void greedySearch(Problem p, Heuristic h)
@@ -164,10 +195,12 @@ public class SearchAlgorithms
         HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
         boolean resolved = false;
         Object initialState = p.getInitialState();
-        Object currentState, nextState, existingClosed;    
+        Object currentState = p.getInitialState();
+        Object nextState, existingClosed;    
         double currentCost, currentScore, nextCost, nextScore;
         boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
         openList.put(initialState, h.getValue(initialState));
+        int nExpandidos = 0;
         int i = 0;
         
         while(!openList.isEmpty())
@@ -180,7 +213,6 @@ public class SearchAlgorithms
                 }
             }
             currentState = min.getKey();
-            System.out.println(currentState);
             if (p.isResolved(currentState)) {
                 resolved = true;
                 break;
@@ -188,7 +220,7 @@ public class SearchAlgorithms
             currentScore = min.getValue();
             currentCost = min.getValue() - h.getValue(currentState); 
             openList.remove(min.getKey());
-            System.out.println(currentScore + " " + h.getValue(currentState) + " " + i);
+            nExpandidos++;
             List <Rule> rules = p.getRules(currentState);
             
             for (Rule rule : rules) {
@@ -226,6 +258,7 @@ public class SearchAlgorithms
                     }
                 }
             }
+
             closedList.put(currentState, currentScore);
         }
                 
@@ -233,8 +266,9 @@ public class SearchAlgorithms
         nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
         System.out.println("Nodos frontera : " + nFrontera);
         
-        int nExpandidos = 0;
-        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+        
+//        int nExpandidos = 0;
+//        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
         System.out.println("Nodos expandidos : " + nExpandidos);
         
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
@@ -246,7 +280,7 @@ public class SearchAlgorithms
     {
         Object actualState = p.getInitialState();
         System.out.println(actualState);
-        int depth = 1;
+        int depth = 36;
         int i = 1;
         
         while (!depthFirstLim(p, actualState, depth))
@@ -273,7 +307,6 @@ public class SearchAlgorithms
                 Object nextState = rule.applyToState(state);
                 if (!visitedNodes.contains(nextState))
                 {
-                    System.out.println(nextState);
                     if (depthFirstLim(p, nextState, depth-1))
                         return true;
                 }
@@ -281,8 +314,6 @@ public class SearchAlgorithms
                 {
                     visitedNodes.add(nextState);
                     
-                    if(nextState instanceof State)
-                        ((State) nextState).applySymmetry(visitedNodes);
                 }
             }
         }

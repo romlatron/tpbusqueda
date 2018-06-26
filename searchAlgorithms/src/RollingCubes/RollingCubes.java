@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package RollingCubes;
-
 import ar.com.itba.sia.Rule;
 import ar.com.itba.sia.Problem;
 import java.util.List;

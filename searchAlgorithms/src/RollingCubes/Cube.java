@@ -21,4 +21,8 @@ public class Cube
     public color getCurrentColor() { return currentColor; }
 
     public void setCurrentColor(color currentColor) { this.currentColor = currentColor; }
+    
+    public int hashCode() {
+        return currentColor.ordinal();
+    }
 }
