@@ -29,6 +29,9 @@ public class SearchAlgorithms
     public static void depthFirst(Problem p)
     {
         int i=0;
+        int exploredNodes = 0;
+        int frontierNodes = 0;
+        
         Stack<Object> stack = new Stack<>();
         List<Object> visitedNodes = new ArrayList<>();
         stack.add(p.getInitialState());
@@ -64,7 +67,10 @@ public class SearchAlgorithms
     public static void breadthFirst(Problem p)
     {
         int i = 0;
-        Queue<Object> queue = new LinkedList<Object>();
+        int exploredNodes = 0;
+        int frontierNodes = 0;
+        
+        Queue<Object> queue = new LinkedList<>();
         List<Object> visitedNodes = new ArrayList<>();
         queue.add(p.getInitialState());
         visitedNodes.add(p.getInitialState());

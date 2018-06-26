@@ -24,10 +24,9 @@ public class MainClass {
      * @param args the command line arguments
      */
     public static void main(String[] args) 
-    {
-        
+    {        
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.depthFirst(rc);
+        SearchAlgorithms.breadthFirst(rc);
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);

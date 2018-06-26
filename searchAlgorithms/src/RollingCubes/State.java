@@ -115,90 +115,6 @@ public class State {
         return symmetricState;
     }
     
-    public State apply90ClockwiseRotation(State currentState)
-    {
-        Cube[] newBoard = new Cube[9];
-        newBoard[0] = new Cube(currentState.board[6].getCurrentColor());
-        newBoard[1] = new Cube(currentState.board[3].getCurrentColor());
-        newBoard[2] = new Cube(currentState.board[0].getCurrentColor());
-        newBoard[3] = new Cube(currentState.board[7].getCurrentColor());
-        newBoard[4] = new Cube(currentState.board[4].getCurrentColor());
-        newBoard[5] = new Cube(currentState.board[1].getCurrentColor());
-        newBoard[6] = new Cube(currentState.board[8].getCurrentColor());
-        newBoard[7] = new Cube(currentState.board[5].getCurrentColor());
-        newBoard[8] = new Cube(currentState.board[2].getCurrentColor());
-        
-        State symmetricState = new State(newBoard);
-        
-        for (Cube c : symmetricState.getBoard())
-        {
-            switch(c.getCurrentColor())
-            {
-                case WDOWN:
-                    c.setCurrentColor(Cube.color.WLEFT);
-                    break;
-                    
-                case WUP:
-                    c.setCurrentColor(Cube.color.WRIGHT);
-                    break;
-                    
-                case WLEFT:
-                    c.setCurrentColor(Cube.color.WUP);
-                    break;
-                    
-                case WRIGHT:
-                    c.setCurrentColor(Cube.color.WDOWN);
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        return symmetricState;
-    }
-    
-    public State apply90AnticlockwiseRotation(State currentState)
-    {
-        Cube[] newBoard = new Cube[9];
-        newBoard[0] = new Cube(currentState.board[2].getCurrentColor());
-        newBoard[1] = new Cube(currentState.board[5].getCurrentColor());
-        newBoard[2] = new Cube(currentState.board[8].getCurrentColor());
-        newBoard[3] = new Cube(currentState.board[1].getCurrentColor());
-        newBoard[4] = new Cube(currentState.board[4].getCurrentColor());
-        newBoard[5] = new Cube(currentState.board[7].getCurrentColor());
-        newBoard[6] = new Cube(currentState.board[0].getCurrentColor());
-        newBoard[7] = new Cube(currentState.board[3].getCurrentColor());
-        newBoard[8] = new Cube(currentState.board[6].getCurrentColor());
-        
-        State symmetricState = new State(newBoard);
-        
-        for (Cube c : symmetricState.getBoard())
-        {
-            switch(c.getCurrentColor())
-            {
-                case WDOWN:
-                    c.setCurrentColor(Cube.color.WRIGHT);
-                    break;
-                    
-                case WUP:
-                    c.setCurrentColor(Cube.color.WLEFT);
-                    break;
-                    
-                case WLEFT:
-                    c.setCurrentColor(Cube.color.WDOWN);
-                    break;
-                    
-                case WRIGHT:
-                    c.setCurrentColor(Cube.color.WUP);
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        return symmetricState;
-    }
-    
     private State apply180Rotation(State currentState)
     {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
@@ -209,14 +125,6 @@ public class State {
         symmetricNode.add(applyHorizontalSymmetry(this));
         symmetricNode.add(applyVerticalSymmetry(this));
         symmetricNode.add(apply180Rotation(this));
-        
-        symmetricNode.add(apply90AnticlockwiseRotation(this));
-//        symmetricNode.add(applyHorizontalSymmetry(apply90AnticlockwiseRotation(this)));
-//        symmetricNode.add(applyVerticalSymmetry(apply90AnticlockwiseRotation(this)));
-//        
-        symmetricNode.add(apply90ClockwiseRotation(this));
-//        symmetricNode.add(applyHorizontalSymmetry(apply90ClockwiseRotation(this)));
-//        symmetricNode.add(applyVerticalSymmetry(apply90ClockwiseRotation(this)));
     }
 
     public List<Rule> getRules() { return rules; }
