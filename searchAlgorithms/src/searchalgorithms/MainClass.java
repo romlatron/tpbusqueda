@@ -12,6 +12,8 @@ import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
 import java.util.ArrayList;
 import java.util.List;
+import sokoban.SokobanProblem;
+import sokoban.SokobanDistanceHeuristic;
 
 
 /**
@@ -25,9 +27,9 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        
-        RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.depthFirst(rc);
+        SokobanProblem sp = new SokobanProblem("input4.txt");
+        //RollingCubes rc = new RollingCubes();
+        SearchAlgorithms.Astar(sp, new SokobanDistanceHeuristic());
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);

@@ -51,7 +51,6 @@ public class SearchAlgorithms
                     
                     if(currentState instanceof State)
                         ((State) currentState).applySymmetry(visitedNodes);
-                        
                     stack.push(currentState);
                     i++;
                 }
@@ -174,7 +173,6 @@ public class SearchAlgorithms
                 }
             }
             currentState = min.getKey();
-            System.out.println(currentState);
             if (p.isResolved(currentState)) {
                 resolved = true;
                 break;
@@ -182,7 +180,6 @@ public class SearchAlgorithms
             currentScore = min.getValue();
             currentCost = min.getValue() - h.getValue(currentState); 
             openList.remove(min.getKey());
-            System.out.println(currentScore + " " + h.getValue(currentState) + " " + i);
             List <Rule> rules = p.getRules(currentState);
             
             for (Rule rule : rules) {
@@ -240,7 +237,7 @@ public class SearchAlgorithms
     {
         Object actualState = p.getInitialState();
         System.out.println(actualState);
-        int depth = 1;
+        int depth = 36;
         int i = 1;
         
         while (!depthFirstLim(p, actualState, depth))
@@ -267,7 +264,6 @@ public class SearchAlgorithms
                 Object nextState = rule.applyToState(state);
                 if (!visitedNodes.contains(nextState))
                 {
-                    System.out.println(nextState);
                     if (depthFirstLim(p, nextState, depth-1))
                         return true;
                 }
