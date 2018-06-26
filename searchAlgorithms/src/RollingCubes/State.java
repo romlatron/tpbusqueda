@@ -179,22 +179,55 @@ public class State {
 //                
 //        return false;
 //    }
+    
+    public State applyRotationalSymmetry(State currentState)
+    {
+        return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
+    }
 
+    public int hashBoard() {
+        int hash = 0;
+        for (int i=0; i<9; i++)
+            switch(this.board[i].getCurrentColor())
+            {
+                case WDOWN:
+                    hash += 7*(i+1)*1;
+                    break;
+                    
+                case WUP:
+                    hash += 7*(i+1)*2;
+                    break;
+                    
+                case WLEFT:
+                    hash += 7*(i+1)*3;
+                    break;
+                    
+                case WRIGHT:
+                    hash += 7*(i+1)*4;
+                    break;
+                case WHITE:
+                    hash += 7*(i+1)*5;
+                    break;
+                case BLACK:
+                    hash += 7*(i+1)*6;
+                    break;
+                case EMPTY:
+                    hash += 7*(i+1)*0;
+                    break;    
+                default:
+                    break;
+            }
+        return hash;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 7;
-        int sum = 0;
-        int[] primes = {2, 3, 5, 7, 11, 13, 17, 19, 23};
-        
-        for(State symmetricState: applySymmetry(this)) {
-            int partialSum = 0;
-            for (int i = 0; i<9; i++) {
-                partialSum += primes[i] ^ symmetricState.getBoard()[i].hashCode();
-            }
-            sum += partialSum;
-        }
-        
-        return sum;
+        hash = 41 * hash + Arrays.deepHashCode(board)
+                + Arrays.deepHashCode(applyHorizontalSymmetry(this).board)
+                + Arrays.deepHashCode(applyVerticalSymmetry(this).board)
+                + Arrays.deepHashCode(applyRotationalSymmetry(this).board);
+        return hash;
     }
     
     @Override
