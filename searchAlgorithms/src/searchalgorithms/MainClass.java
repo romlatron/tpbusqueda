@@ -30,23 +30,22 @@ public class MainClass {
         
         Heuristic h = ImprovedHeuristic.getInstance();
         Object s = rc.getInitialState();
-        System.out.println(s.hashCode());
+        System.out.println(((State)s).hashBoard());
         
-        System.out.println(((State)(s)).applyVerticalSymmetry((State)s).hashCode());
-        System.out.println(((State)(s)).applyHorizontalSymmetry((State)s).hashCode());
-        System.out.println(((State)(s)).applyRotationalSymmetry((State)s).hashCode());
+        System.out.println(((State)(s)).applyVerticalSymmetry((State)s).hashBoard());
+        System.out.println(((State)(s)).applyHorizontalSymmetry((State)s).hashBoard());
+        System.out.println(((State)(s)).applyRotationalSymmetry((State)s).hashBoard());
         ClickUp up = new ClickUp();
         
         System.out.println("--------------------");
 
         Object s2 = up.applyToState(s);
         
-        System.out.println(s2.hashCode());
-        
-        
-        System.out.println(((State)(s2)).applyVerticalSymmetry((State)s2).hashCode());
-        System.out.println(((State)(s2)).applyHorizontalSymmetry((State)s2).hashCode());
-        System.out.println(((State)(s2)).applyRotationalSymmetry((State)s2).hashCode());
+        System.out.println(((State)s2).hashBoard());
+                
+        System.out.println(((State)(s2)).applyVerticalSymmetry((State)s2).hashBoard());
+        System.out.println(((State)(s2)).applyHorizontalSymmetry((State)s2).hashBoard());
+        System.out.println(((State)(s2)).applyRotationalSymmetry((State)s2).hashBoard());
         if (args.length==0) { 
             //SearchAlgorithms.depthFirst(rc);
           // System.out.println(SearchAlgorithms.Astar(rc, h));
