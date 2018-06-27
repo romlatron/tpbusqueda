@@ -28,7 +28,7 @@ public class MainClass {
     {
         SokobanProblem sp = new SokobanProblem("input4.txt");
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.iterativeDeepening(rc);
+        SearchAlgorithms.greedySearch(rc, ImprovedHeuristic.getInstance());
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);
