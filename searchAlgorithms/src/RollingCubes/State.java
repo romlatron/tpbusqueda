@@ -7,9 +7,7 @@ package RollingCubes;
 
 import ar.com.itba.sia.Rule;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 /**
  *
  * @author Acer
@@ -162,19 +160,6 @@ public class State {
         }
         return false;
     }
-    
-//    @Override
-//    public boolean equals(Object object) {
-//        if (object == null) 
-//            return false;
-//        
-//        State s = (State) object;
-//
-//        for(State symmetricState: applySymmetry(s)) {
-//            if (symmetricState.strictEquals(this)) return true;
-//        }
-//        return false;
-//    }
 
     public int hashBoard() {
         int hash = 0;

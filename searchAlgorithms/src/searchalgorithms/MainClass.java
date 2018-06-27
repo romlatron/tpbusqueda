@@ -7,11 +7,8 @@ package searchalgorithms;
 
 import ar.com.itba.sia.*;
 import RollingCubes.RollingCubes;
-import RollingCubes.*;
 import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -23,16 +20,13 @@ public class MainClass {
      * @param args the command line arguments
      */
     public static void main(String[] args) 
-    {        
+    {
         RollingCubes rc = new RollingCubes();
-//        SearchAlgorithms.depthFirst(rc);
-        
-        Heuristic h = ImprovedHeuristic.getInstance();
+        Heuristic h;
 
         if (args.length==0) { 
-            SearchAlgorithms.depthFirst(rc);
-          // System.out.println(SearchAlgorithms.Astar(rc, h));
-          //SearchAlgorithms.greedySearch(rc, h);
+            System.out.println("Invalid method");
+            return;
         } else if (args.length == 1) {
             switch(args[0]) {
                 case "DFS" :

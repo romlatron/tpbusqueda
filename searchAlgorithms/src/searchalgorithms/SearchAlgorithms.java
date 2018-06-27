@@ -5,14 +5,10 @@
  */
 package searchalgorithms;
 
-import RollingCubes.State;
 import ar.com.itba.sia.*;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -214,7 +210,7 @@ public class SearchAlgorithms
         Object initialState = p.getInitialState();
         Object currentState = null;
         Object nextState, existingClosed;    
-        double currentCost, currentScore = 0, nextCost, nextScore;
+        double currentCost = 0, currentScore = 0, nextCost, nextScore;
         boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
         openList.put(initialState, h.getValue(initialState));
         int nExpandidos = 0;
@@ -273,7 +269,7 @@ public class SearchAlgorithms
                 
         int nFrontera = 0;
         nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
-        System.out.println("Profundidad : " + currentScore);
+        System.out.println("Profundidad : " + currentCost);
         
         System.out.println("Nodos frontera : " + nFrontera);
         
