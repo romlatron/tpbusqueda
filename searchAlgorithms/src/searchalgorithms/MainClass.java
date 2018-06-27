@@ -47,9 +47,9 @@ public class MainClass {
         System.out.println(((State)(s2)).applyHorizontalSymmetry((State)s2).hashBoard());
         System.out.println(((State)(s2)).applyRotationalSymmetry((State)s2).hashBoard());*/
         if (args.length==0) { 
-            SearchAlgorithms.depthFirst(rc);
+            //SearchAlgorithms.depthFirst(rc);
           // System.out.println(SearchAlgorithms.Astar(rc, h));
-          //SearchAlgorithms.greedySearch(rc, h);
+          SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {
             switch(args[0]) {
                 case "DFS" :

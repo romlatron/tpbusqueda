@@ -156,10 +156,10 @@ public class State {
             return false;
         
         State s = (State) object;
-
-        for(State symmetricState: applySymmetry(s)) {
+        if (s.strictEquals(this)) return true;
+        /*for(State symmetricState: applySymmetry(s)) {
             if (symmetricState.strictEquals(this)) return true;
-        }
+        }*/
         return false;
     }
     

@@ -10,6 +10,7 @@ import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -60,41 +61,39 @@ public class SearchAlgorithms
             return node.hashCode();
         }
     }
-            
+        
     public static void depthFirst(Problem p)
     {
         int exploded = 0;
-        Deque<Result> frontier = new LinkedList<>();
-        Map<Result, Integer> nodeDepths = new HashMap<>();
+        Deque<Object> frontier = new LinkedList<>();
+        HashSet<Object> visitedNodes = new HashSet<>();
         long startTime = System.nanoTime();
-        frontier.add(new Result(p.getInitialState()));
+        frontier.add(p.getInitialState());
 
         while(!frontier.isEmpty())
         {   
-            Result parentState = frontier.pop();
-            nodeDepths.put(parentState, parentState.depth);
+            Object currentState = frontier.pop();
             exploded++;
-            
-            List<Rule> rules = p.getRules(parentState.node);
-            for (Rule rule : rules) {
-                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                Integer oldDepth = nodeDepths.get(currentState);
-                
-                if (oldDepth == null || oldDepth > currentState.depth) {
-                    frontier.push(currentState);
-                    if (p.isResolved((currentState.node))) {
+            if (p.isResolved((currentState))) {
                         long estimatedTime = System.nanoTime() - startTime;
-                        System.out.println(currentState.node);
+                        System.out.println(currentState);
                         System.out.println("Nodos frontera: " + frontier.size());
                         System.out.println("Nodos Explotados: " + exploded);
                         System.out.println("Nodos Generados: " + (frontier.size() + exploded));
-                        System.out.println("Profundidad: " + currentState.depth);
+                        //System.out.println("Profundidad: " + currentState.depth);
                         System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
                         // TODO: Check frontier and exploded
                         return;
-                    }
+            }
+            
+            List<Rule> rules = p.getRules(currentState);
+            for (Rule rule : rules) {
+                
+                if (!visitedNodes.contains(rule.applyToState(currentState))) {
+                    frontier.push(rule.applyToState(currentState));                    
                 }
             }
+            visitedNodes.add(currentState);
         }
     }
     
@@ -142,7 +141,7 @@ public class SearchAlgorithms
         Rule applyRule;
         double minScore;
         boolean visited;
-        HashMap <Object, Object> visitedNodes = new LinkedHashMap<>();        
+        HashMap <Object, Object> visitedNodes = new HashMap<>();        
         visitedNodes.put(currentState, null);
         int i =0;
         
@@ -159,12 +158,14 @@ public class SearchAlgorithms
             for (Rule<Object> rule : rules)
             {                
                 visited = false;
-                for (Object o : visitedNodes.keySet())
+                if (visitedNodes.keySet().contains(rule.applyToState(currentState)))
+                    visited = true;
+                /*for (Object o : visitedNodes.keySet())
                     if (o.equals(rule.applyToState(currentState))){
                         visited = true;
                         break;
                     }
-                
+                */
                 if (!visited) {
                     if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore){
                         minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
@@ -175,9 +176,9 @@ public class SearchAlgorithms
             if (applyRule != null) {
                 nextState = applyRule.applyToState(currentState);
                 visitedNodes.put(nextState, currentState);
-                visitedNodes.put(((State)(nextState)).applyHorizontalSymmetry((State)nextState), null);
-                visitedNodes.put(((State)(nextState)).applyVerticalSymmetry((State)nextState), null);
-                visitedNodes.put(((State)(nextState)).applyRotationalSymmetry((State)nextState), null);
+               // visitedNodes.put(((State)(nextState)).applyHorizontalSymmetry((State)nextState), null);
+               // visitedNodes.put(((State)(nextState)).applyVerticalSymmetry((State)nextState), null);
+               // visitedNodes.put(((State)(nextState)).applyRotationalSymmetry((State)nextState), null);
                 
                 currentState = nextState;                
             }
