@@ -228,6 +228,11 @@ public class State {
         return hash;
     }
     
+    public State applyRotationalSymmetry(State currentState)
+    {
+        return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
+    }
+    
     @Override
     public int hashCode() {
         int hash = this.hashBoard();

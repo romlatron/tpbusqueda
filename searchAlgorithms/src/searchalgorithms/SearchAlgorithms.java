@@ -194,57 +194,108 @@ public class SearchAlgorithms
         }
     }
     
-    public static void Astar(Problem p, Heuristic h)
+    public static boolean Astar(Problem p, Heuristic h)
     {
-        int exploded = 0;
-        PriorityQueue<Result> frontier = new PriorityQueue<>(Comparator.comparingDouble(n -> n.heuristicCost + n.cost));
-        Set<Object> visitedNodes = new HashSet<>();
-        long startTime = System.nanoTime();
-        frontier.add(new Result(p.getInitialState(), h.getValue(p.getInitialState())));
-
-        while(!frontier.isEmpty())
+        Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
+        HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
+        boolean resolved = false;
+        Object initialState = p.getInitialState();
+        Object currentState = null;
+        Object nextState, existingClosed;    
+        double currentCost, currentScore, nextCost, nextScore;
+        boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
+        openList.put(initialState, h.getValue(initialState));
+        int nExpandidos = 0;
+        int i = 0;
+        
+        while(!openList.isEmpty())
         {   
-            Result parentState = frontier.remove();
-            visitedNodes.add(parentState);
-            exploded++;
+            i++;
+            Entry<Object, Double> min = null;
+            for (Entry<Object, Double> entry : openList.entrySet()) { //we select the node with smallest score in the waiting list
+                if (min == null || min.getValue() > entry.getValue()) {
+                    min = entry;
+                }
+            }
+            currentState = min.getKey();
+
+            if (p.isResolved(currentState)) {
+                resolved = true;
+                break;
+            }
+            currentScore = min.getValue();
+            currentCost = min.getValue() - h.getValue(currentState); 
+            openList.remove(min.getKey());
+
+            nExpandidos++;
+            List <Rule> rules = p.getRules(currentState);
             
-            List<Rule> rules = p.getRules(parentState.node);
             for (Rule rule : rules) {
-                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                currentState.heuristicCost = h.getValue(currentState.node);
-                currentState.cost = parentState.cost + rule.getCost();
-                currentState.parent = parentState;
+            
+                visited = false;
+                waitingList = false;
+                existingClosed = null;
+                nextState = rule.applyToState(currentState);
+                nextCost = currentCost + rule.getCost();
+                nextScore =  nextCost + h.getValue(nextState);
                 
-                if (!visitedNodes.contains(currentState)) {
-                    if(currentState.node instanceof RollingCubes.State) {
-                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
+                for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
+                    if (entry.getKey().equals(nextState)) {
+                        existingClosed = entry.getKey(); //in case it has been visited with a higher score, we will have to replace it
+                        visited = entry.getValue() <= nextScore;
+                        break;
                     }
-                    frontier.add(currentState);
-                    if (p.isResolved((currentState.node))) {
-                        long estimatedTime = System.nanoTime() - startTime;
-                        System.out.println(currentState.node);
-                        System.out.println("Nodos frontera: " + frontier.size());
-                        System.out.println("Nodos Explotados: " + exploded);
-                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
-                        System.out.println("Profundidad: " + currentState.depth);
-                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
-                        // TODO: Check generated nodes
-                        return;
+                }
+                
+                if (!visited) { // check that the node isn't already in the waiting list with lower score
+                
+                    Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
+                    while (ite.hasNext()) {
+                        Map.Entry<Object, Double> entry = ite.next();
+                        if (entry.getKey().equals(nextState) 
+                                || entry.getKey().equals(((State)(nextState)).applyHorizontalSymmetry((State)nextState))
+                                ||entry.getKey().equals(((State)(nextState)).applyRotationalSymmetry((State)nextState))
+                                ||entry.getKey().equals(((State)(nextState)).applyVerticalSymmetry((State)nextState))) {
+                            waitingList = entry.getValue()<= nextScore;
+                            if (!waitingList) ite.remove();
+                            break;
+                        }
+                    }
+
+                    if (!waitingList) {
+                        openList.put(nextState, nextScore);
+                        if (existingClosed != null) closedList.remove(existingClosed);
                     }
                 }
             }
+            closedList.put(currentState, currentScore);
+            closedList.put(((State)(currentState)).applyHorizontalSymmetry((State)currentState), currentScore);
+            closedList.put(((State)(currentState)).applyVerticalSymmetry((State)currentState), currentScore);
+            closedList.put(((State)(currentState)).applyRotationalSymmetry((State)currentState), currentScore);
         }
+                
+        int nFrontera = 0;
+        nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+        System.out.println("Nodos frontera : " + nFrontera);
+        
+        
+//        int nExpandidos = 0;
+//        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
+
+        System.out.println("Nodos expandidos : " + nExpandidos);
+        
+        System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
+        
+        return resolved;
     }
         
     public static void iterativeDeepening (Problem p) 
     {
-        Integer exploded = 0;
-        Deque<Result> frontier = new LinkedList<>();
+        
         long startTime = System.nanoTime();
-        frontier.add(new Result(p.getInitialState()));
         
         for (int i = 1; i < Integer.MAX_VALUE; i++) {
-            Result goal = depthFirstLim(p,i, frontier);
+            Result goal = depthFirstLim(p,i);
             if (goal != null) {
                 long estimatedTime = System.nanoTime() - startTime;
                 System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
@@ -254,11 +305,13 @@ public class SearchAlgorithms
     }
     
     //recursive algorithm used by iterative deepening
-    private static Result depthFirstLim (Problem p, int depth, Deque<Result> frontier) 
+    private static Result depthFirstLim (Problem p, int depth) 
     {   
         Map<Result, Integer> nodeDepths = new HashMap<>();
-
+        Deque<Result> frontier = new LinkedList<>();
+        frontier.add(new Result(p.getInitialState()));
         int exploded = 0;
+        
         while(!frontier.isEmpty())
         {   
             Result parentState = frontier.pop();
