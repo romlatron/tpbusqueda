@@ -7,14 +7,8 @@ package searchalgorithms;
 
 import ar.com.itba.sia.*;
 import RollingCubes.RollingCubes;
-import RollingCubes.State;
 import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
-import java.util.ArrayList;
-import java.util.List;
-import sokoban.SokobanProblem;
-import sokoban.SokobanDistanceHeuristic;
-import sokoban.SokobanPlacedBoxesHeuristic;
 
 /**
  *
@@ -27,26 +21,12 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        // SokobanProblem sp = new SokobanProblem("input4.txt");
-        RollingCubes rc = new RollingCubes();
-        //SearchAlgorithms.iterativeDeepening(rc);
-//        State root = (State)rc.getInitialState();
-//        Rule rule = root.getRules().get(0);
-//        State firstState = (State) rule.applyToState(root);
-//        State symmetricState =
+        RollingCubes rc = new RollingCubes();   
+        Heuristic h = null;
         
-//        List<Object> symmetrics = new ArrayList<>();
-//        firstState.applySymmetry(symmetrics);
-//        System.out.println("1st state \n"+ firstState);
-//        System.out.println("90 clock \n" + firstState.apply90ClockwiseRotation(firstState));
-//        System.out.println("1st state \n"+ firstState);
-        
-//        SearchAlgorithms.depthFirst(rc);
-        
-        Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 
-            //System.out.println(SearchAlgorithms.Astar(rc, h));
-            SearchAlgorithms.greedySearch(rc, h);
+            System.out.println("Missing arguments");
+            return;
         } else if (args.length == 1 || args.length == 2 && args[1].equals("--trace")) {
             boolean trace = args.length == 2 && args[1].equals("--trace");
             Result result = null;
@@ -62,7 +42,7 @@ public class MainClass {
                     break;
                 default :
                     System.out.println("Invalid method");
-                    break;
+                    return;
             }
             if (trace && result != null) {
                 Result it = result;
@@ -94,7 +74,7 @@ public class MainClass {
                     break;
                 default :
                     System.out.println("Invalid method");
-                    break;
+                    return;
             }
             
             if (trace && result != null) {
