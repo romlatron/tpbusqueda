@@ -7,8 +7,9 @@ package RollingCubes;
 
 import ar.com.itba.sia.Rule;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 /**
  *
  * @author Acer
@@ -120,16 +121,24 @@ public class State {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
     
-    public List<State> applySymmetry(State s)
-    {  
-        List symmetricNode = new ArrayList<>();
-
-        symmetricNode.add(s);
-        symmetricNode.add(applyHorizontalSymmetry(s));
-        symmetricNode.add(applyVerticalSymmetry(s));
-        symmetricNode.add(apply180Rotation(s));
-        
-        return symmetricNode;
+//    public List<State> applySymmetry(State s)
+//    {  
+//        List symmetricNode = new ArrayList<>();
+//
+//        symmetricNode.add(s);
+//        symmetricNode.add(applyHorizontalSymmetry(s));
+//        symmetricNode.add(applyVerticalSymmetry(s));
+//        symmetricNode.add(apply180Rotation(s));
+//        
+//        return symmetricNode;
+//    }
+    
+    public void applySymmetry(Set<Object> visitedNodes)
+    {
+        visitedNodes.add(this);
+        visitedNodes.add(applyHorizontalSymmetry(this));
+        visitedNodes.add(applyVerticalSymmetry(this));
+        visitedNodes.add(apply180Rotation(this));
     }
 
     public List<Rule> getRules() { return rules; }
@@ -151,38 +160,34 @@ public class State {
         return true;
     }
     
-    @Override
-    public boolean equals(Object object) {
-        if (object == null) 
-            return false;
-        
-        State s = (State) object;
-
-        for(State symmetricState: applySymmetry(s)) {
-            if (symmetricState.strictEquals(this)) return true;
-        }
-        return false;
-    }
-    
 //    @Override
 //    public boolean equals(Object object) {
 //        if (object == null) 
 //            return false;
 //        
 //        State s = (State) object;
-//        List<Object> symmetricStates = new ArrayList<>();
-//        s.applySymmetry(symmetricStates);
-//        
-//        for (int i = 0; i<symmetricStates.size(); i++) 
-//            if (this.sameBoard(symmetricStates.get(i)))
-//                return true;
-//                
+//
+//        for(State symmetricState: applySymmetry(s)) {
+//            if (symmetricState.strictEquals(this)) return true;
+//        }
 //        return false;
 //    }
     
-    public State applyRotationalSymmetry(State currentState)
-    {
-        return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) 
+            return false;
+        
+//        State s = (State) object;
+//        Set<Object> symmetricStates = new HashSet<>();
+//        s.applySymmetry(symmetricStates);
+//        
+//        for (Object o : symmetricStates) 
+//            if (this.strictEquals(o))
+//                return true;
+        return this.strictEquals(object);
+                
+//        return false;
     }
 
     public int hashBoard() {
@@ -222,11 +227,12 @@ public class State {
     
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 41 * hash + Arrays.deepHashCode(board)
-                + Arrays.deepHashCode(applyHorizontalSymmetry(this).board)
-                + Arrays.deepHashCode(applyVerticalSymmetry(this).board)
-                + Arrays.deepHashCode(applyRotationalSymmetry(this).board);
+        int hash = this.hashBoard();
+//        int hash = 7;
+//        hash = 41 * hash + Arrays.deepHashCode(board)
+//                + Arrays.deepHashCode(applyHorizontalSymmetry(this).board)
+//                + Arrays.deepHashCode(applyVerticalSymmetry(this).board)
+//                + Arrays.deepHashCode(applyRotationalSymmetry(this).board);
         return hash;
     }
     

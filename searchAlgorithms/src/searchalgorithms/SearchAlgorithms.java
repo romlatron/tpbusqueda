@@ -5,10 +5,12 @@
  */
 package searchalgorithms;
 
+import RollingCubes.State;
 import ar.com.itba.sia.*;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 
@@ -59,7 +63,8 @@ public class SearchAlgorithms
             return node.hashCode();
         }
     }
-            
+     
+    /*
     public static void depthFirst(Problem p)
     {
         int exploded = 0;
@@ -95,6 +100,42 @@ public class SearchAlgorithms
                 }
             }
         }
+    }
+    */
+    
+    public static void depthFirst(Problem p)
+    {
+        int i=0;
+        Stack<Object> stack = new Stack<>();
+        Set<Object> visitedNodes = new HashSet<>();
+        stack.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
+        
+        while(!stack.isEmpty() && !p.isResolved(stack.peek()))
+        {
+            Object tmpObj = stack.pop();
+            //System.out.println(i);
+            //System.out.println(tmpObj);
+            
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules)
+            {
+                Object currentState = rule.applyToState(tmpObj);
+                
+                if (!visitedNodes.contains(currentState))
+                {
+                    visitedNodes.add(currentState);
+                    
+                    if(currentState instanceof State)
+                        ((State) currentState).applySymmetry(visitedNodes);
+                        
+                    stack.push(currentState);
+                    i++;
+                }
+            }
+        }
+        if (p.isResolved(stack.peek()))
+            System.out.println(stack.peek());
     }
     
     public static void breadthFirst(Problem p)
