@@ -70,6 +70,7 @@ public class SearchAlgorithms
         Set<Result> visitedNodes = new HashSet<>();
         stack.add(new Result(p.getInitialState()));
         visitedNodes.add(new Result(p.getInitialState()));
+        long startTime = System.nanoTime();
         
         while(!stack.isEmpty() && !p.isResolved(stack.peek().node))
         {
@@ -90,6 +91,10 @@ public class SearchAlgorithms
             }
         }
         if (p.isResolved(stack.peek().node)) {
+            
+            long estimatedTime = System.nanoTime() - startTime;
+            System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+            
             System.out.println(stack.peek());
             System.out.println("Profundidad de la solucion : " + stack.peek().depth);
             
@@ -104,29 +109,40 @@ public class SearchAlgorithms
     public static void breadthFirst(Problem p)
     {
         int i = 0;
-        Queue<Object> queue = new LinkedList<>();
-        Set<Object> visitedNodes = new HashSet<>();
-        queue.add(p.getInitialState());
-        visitedNodes.add(p.getInitialState());
-        
-        while(!queue.isEmpty() && !p.isResolved(queue.element()))
+        Queue<Result> queue = new LinkedList<>();
+        Set<Result> visitedNodes = new HashSet<>();
+        queue.add(new Result(p.getInitialState()));
+        visitedNodes.add(new Result(p.getInitialState()));
+        long startTime = System.nanoTime();
+
+        while(!queue.isEmpty() && !p.isResolved(queue.element().node))
         {   
-            Object tmpObj = queue.poll();
+            Result currentResult = queue.poll();
+            Object tmpObj = currentResult.node;
             System.out.println(i);
-            
+            i++;
             List<Rule>rules = p.getRules(tmpObj);
             for (Rule rule : rules) 
-            {
-                Object currentState = rule.applyToState(tmpObj);
-                
-                if (!visitedNodes.contains(currentState))
+            {                
+                Object newState = rule.applyToState(tmpObj);
+                Result newResult = new Result(newState, currentResult.depth+1);
+                if (!visitedNodes.contains(newResult))
                 {
-                    queue.add(currentState);
-                    visitedNodes.add(currentState);
+                    queue.add(newResult);
+                    visitedNodes.add(newResult);
                     
-                    i++;
                 }
             }
+            long estimatedTime = System.nanoTime() - startTime;
+            System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+            
+            System.out.println("Profundidad de la solucion : " + queue.element().depth);
+            
+            System.out.println("Nodos expandidos : " + i);
+            
+            int nFrontera = 0;
+            nFrontera = queue.stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+            System.out.println("Nodos frontera : " + nFrontera);
         }
         if (p.isResolved(queue.element()))
             System.out.println(queue.element());
@@ -202,6 +218,7 @@ public class SearchAlgorithms
         boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
         openList.put(initialState, h.getValue(initialState));
         int nExpandidos = 0;
+        long startTime = System.nanoTime();
         
         while(!openList.isEmpty())
         {   
@@ -250,6 +267,9 @@ public class SearchAlgorithms
             }
             closedList.put(currentState, currentScore);
         }
+        
+        long estimatedTime = System.nanoTime() - startTime;
+        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
                 
         int nFrontera = 0;
         nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
