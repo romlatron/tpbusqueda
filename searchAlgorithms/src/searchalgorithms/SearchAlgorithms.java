@@ -174,6 +174,7 @@ public class SearchAlgorithms
         boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
         openList.put(initialState, h.getValue(initialState));
         int nExpandidos = 0;
+        long startTime = System.nanoTime();
         
         while(!openList.isEmpty())
         {   
@@ -184,15 +185,15 @@ public class SearchAlgorithms
                 }
             }
             currentState = min.getKey();
-
+            
+            currentScore = min.getValue();
+            currentCost = min.getValue() - h.getValue(currentState); 
             if (p.isResolved(currentState)) {
                 resolved = true;
                 break;
             }
-            currentScore = min.getValue();
-            currentCost = min.getValue() - h.getValue(currentState); 
             openList.remove(min.getKey());
-            //System.out.println(nExpandidos+ " "+currentScore);
+            //System.out.println(nExpandidos+ " " + h.getValue(currentState) +" "+currentScore);
 
             nExpandidos++;
             List <Rule> rules = p.getRules(currentState);
@@ -222,15 +223,21 @@ public class SearchAlgorithms
             }
             closedList.put(currentState, currentScore);
         }
+        
+        long estimatedTime = System.nanoTime() - startTime;
+        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
                 
         int nFrontera = 0;
         nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
-        System.out.println(currentState);
         System.out.println("Profundidad : " + currentCost);
+        
         System.out.println("Nodos frontera : " + nFrontera);
+        
         System.out.println("Nodos expandidos : " + nExpandidos);
+        
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
-        return (Result) currentState;
+        
+        return null;
     }
     
     

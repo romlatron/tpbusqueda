@@ -27,7 +27,7 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        // SokobanProblem sp = new SokobanProblem("input4.txt");
+        SokobanProblem sp = new SokobanProblem("input4.txt");
         RollingCubes rc = new RollingCubes();
         //SearchAlgorithms.iterativeDeepening(rc);
 //        State root = (State)rc.getInitialState();
@@ -45,8 +45,8 @@ public class MainClass {
         
         Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 
-           // System.out.println(SearchAlgorithms.Astar(rc, h));
-            SearchAlgorithms.greedySearch(rc, h);
+           System.out.println(SearchAlgorithms.Astar(sp, new SokobanDistanceHeuristic()));
+           // SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1 || args.length == 2 && args[1].equals("--trace")) {
             boolean trace = args.length == 2 && args[1].equals("--trace");
             Result result = null;
