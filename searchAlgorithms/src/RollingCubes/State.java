@@ -120,6 +120,10 @@ public class State {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
     
+    public List<State> applySymmetry() {
+        return this.applySymmetry(this);
+    }
+    
     public List<State> applySymmetry(State s)
     {  
         List symmetricNode = new ArrayList<>();
