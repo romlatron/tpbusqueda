@@ -126,8 +126,8 @@ public class SearchAlgorithms
                 {
                     visitedNodes.add(currentState);
                     
-                    if(currentState instanceof State)
-                        ((State) currentState).applySymmetry(visitedNodes);
+//                    if(currentState instanceof State)
+//                        ((State) currentState).applySymmetry(visitedNodes);
                         
                     stack.push(currentState);
                     i++;
@@ -140,40 +140,73 @@ public class SearchAlgorithms
     
     public static void breadthFirst(Problem p)
     {
-        int exploded = 0;
-        Queue<Result> frontier = new LinkedList<>();
-        Map<Result, Integer> nodeDepths = new HashMap<>();
-        long startTime = System.nanoTime();
-        frontier.add(new Result(p.getInitialState()));
-
-        while(!frontier.isEmpty())
+        int i = 0;
+        Queue<Object> queue = new LinkedList<>();
+        Set<Object> visitedNodes = new HashSet<>();
+        queue.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
+        
+        while(!queue.isEmpty() && !p.isResolved(queue.element())/*i++ != 10*/)
         {   
-            Result parentState = frontier.poll();
-            nodeDepths.put(parentState, parentState.depth);
-            exploded++;
+            Object tmpObj = queue.poll();
+            System.out.println(i);
             
-            List<Rule> rules = p.getRules(parentState.node);
-            for (Rule rule : rules) {
-                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                Integer oldDepth = nodeDepths.get(currentState);
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules) 
+            {
+                Object currentState = rule.applyToState(tmpObj);
                 
-                if (oldDepth == null || oldDepth > currentState.depth) {
-                    frontier.add(currentState);
-                    if (p.isResolved((currentState.node))) {
-                        long estimatedTime = System.nanoTime() - startTime;
-                        System.out.println(currentState.node);
-                        System.out.println("Nodos frontera: " + frontier.size());
-                        System.out.println("Nodos Explotados: " + exploded);
-                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
-                        System.out.println("Profundidad: " + currentState.depth);
-                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
-                        // TODO: Check generated nodes
-                        return;
-                    }
+                if (!visitedNodes.contains(currentState))
+                {
+                    queue.add(currentState);
+                    visitedNodes.add(currentState);
+                    
+//                    if(currentState instanceof State)
+//                        ((State) currentState).applySymmetry(visitedNodes);
+                    i++;
                 }
             }
         }
+        if (p.isResolved(queue.element()))
+            System.out.println(queue.element());
     }
+    
+//    public static void breadthFirst(Problem p)
+//    {
+//        int exploded = 0;
+//        Queue<Result> frontier = new LinkedList<>();
+//        Map<Result, Integer> nodeDepths = new HashMap<>();
+//        long startTime = System.nanoTime();
+//        frontier.add(new Result(p.getInitialState()));
+//
+//        while(!frontier.isEmpty())
+//        {   
+//            Result parentState = frontier.poll();
+//            nodeDepths.put(parentState, parentState.depth);
+//            exploded++;
+//            
+//            List<Rule> rules = p.getRules(parentState.node);
+//            for (Rule rule : rules) {
+//                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
+//                Integer oldDepth = nodeDepths.get(currentState);
+//                
+//                if (oldDepth == null || oldDepth > currentState.depth) {
+//                    frontier.add(currentState);
+//                    if (p.isResolved((currentState.node))) {
+//                        long estimatedTime = System.nanoTime() - startTime;
+//                        System.out.println(currentState.node);
+//                        System.out.println("Nodos frontera: " + frontier.size());
+//                        System.out.println("Nodos Explotados: " + exploded);
+//                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
+//                        System.out.println("Profundidad: " + currentState.depth);
+//                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+//                        // TODO: Check generated nodes
+//                        return;
+//                    }
+//                }
+//            }
+//        }
+//    }
     
     public static void greedySearch(Problem p, Heuristic h)
     {

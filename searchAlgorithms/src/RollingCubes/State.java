@@ -227,12 +227,11 @@ public class State {
     
     @Override
     public int hashCode() {
-        int hash = this.hashBoard();
-//        int hash = 7;
-//        hash = 41 * hash + Arrays.deepHashCode(board)
-//                + Arrays.deepHashCode(applyHorizontalSymmetry(this).board)
-//                + Arrays.deepHashCode(applyVerticalSymmetry(this).board)
-//                + Arrays.deepHashCode(applyRotationalSymmetry(this).board);
+        int hash = this.hashBoard()
+                + applyHorizontalSymmetry(this).hashBoard()
+                + applyVerticalSymmetry(this).hashBoard()
+                + apply180Rotation(this).hashBoard();
+        
         return hash;
     }
     
