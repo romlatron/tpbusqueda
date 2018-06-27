@@ -7,13 +7,11 @@ package searchalgorithms;
 
 import ar.com.itba.sia.*;
 import RollingCubes.RollingCubes;
-import RollingCubes.State;
+import RollingCubes.*;
 import RollingCubes.ColorCubesHeuristic;
 import RollingCubes.ImprovedHeuristic;
 import java.util.ArrayList;
 import java.util.List;
-import sokoban.SokobanProblem;
-import sokoban.SokobanDistanceHeuristic;
 
 /**
  *
@@ -25,27 +23,16 @@ public class MainClass {
      * @param args the command line arguments
      */
     public static void main(String[] args) 
-    {
-//        SokobanProblem rc = new SokobanProblem("input4.txt");
+    {        
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.breadthFirst(rc);
-//        State root = (State)rc.getInitialState();
-//        Rule rule = root.getRules().get(0);
-//        State firstState = (State) rule.applyToState(root);
-//        State symmetricState =
-        
-//        List<Object> symmetrics = new ArrayList<>();
-//        firstState.applySymmetry(symmetrics);
-//        System.out.println("1st state \n"+ firstState);
-//        System.out.println("90 clock \n" + firstState.apply90ClockwiseRotation(firstState));
-//        System.out.println("1st state \n"+ firstState);
-        
 //        SearchAlgorithms.depthFirst(rc);
         
-        /*Heuristic h = ImprovedHeuristic.getInstance();
+        Heuristic h = ImprovedHeuristic.getInstance();
+
         if (args.length==0) { 
-           // System.out.println(SearchAlgorithms.Astar(rc, h));
-            SearchAlgorithms.greedySearch(rc, h);
+            SearchAlgorithms.depthFirst(rc);
+          // System.out.println(SearchAlgorithms.Astar(rc, h));
+          //SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {
             switch(args[0]) {
                 case "DFS" :
@@ -85,6 +72,6 @@ public class MainClass {
                     break;
             }
                 
-        }*/
+        }
     }    
 }

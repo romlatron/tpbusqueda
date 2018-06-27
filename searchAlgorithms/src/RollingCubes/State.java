@@ -115,30 +115,22 @@ public class State {
         }
         return symmetricState;
     }
-    
-    private State apply180Rotation(State currentState)
+ 
+    private State applyRotationalSymmetry(State currentState)
     {
         return applyHorizontalSymmetry(applyVerticalSymmetry(currentState));
     }
     
-//    public List<State> applySymmetry(State s)
-//    {  
-//        List symmetricNode = new ArrayList<>();
-//
-//        symmetricNode.add(s);
-//        symmetricNode.add(applyHorizontalSymmetry(s));
-//        symmetricNode.add(applyVerticalSymmetry(s));
-//        symmetricNode.add(apply180Rotation(s));
-//        
-//        return symmetricNode;
-//    }
-    
-    public void applySymmetry(Set<Object> visitedNodes)
-    {
-        visitedNodes.add(this);
-        visitedNodes.add(applyHorizontalSymmetry(this));
-        visitedNodes.add(applyVerticalSymmetry(this));
-        visitedNodes.add(apply180Rotation(this));
+    private List<State> applySymmetry(State s)
+    {  
+        List symmetricNode = new ArrayList<>();
+
+        symmetricNode.add(s);
+        symmetricNode.add(applyHorizontalSymmetry(s));
+        symmetricNode.add(applyVerticalSymmetry(s));
+        symmetricNode.add(applyRotationalSymmetry(s));
+        
+        return symmetricNode;
     }
 
     public List<Rule> getRules() { return rules; }
@@ -147,17 +139,28 @@ public class State {
     
     public int getIndexEmpty() { return indexEmpty; }
     
-//    @Override
     public boolean strictEquals(Object object) {
         if (object == null) 
             return false;
-        
         State s = (State) object;
         for (int i = 0; i<9; i++) {
             if (this.board[i].getCurrentColor() != s.getBoard()[i].getCurrentColor())
                 return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) 
+            return false;
+        
+        State s = (State) object;
+        if (s.strictEquals(this)) return true;
+        for(State symmetricState: applySymmetry(s)) {
+            if (symmetricState.strictEquals(this)) return true;
+        }
+        return false;
     }
     
 //    @Override
@@ -172,23 +175,6 @@ public class State {
 //        }
 //        return false;
 //    }
-    
-    @Override
-    public boolean equals(Object object) {
-        if (object == null) 
-            return false;
-        
-//        State s = (State) object;
-//        Set<Object> symmetricStates = new HashSet<>();
-//        s.applySymmetry(symmetricStates);
-//        
-//        for (Object o : symmetricStates) 
-//            if (this.strictEquals(o))
-//                return true;
-        return this.strictEquals(object);
-                
-//        return false;
-    }
 
     public int hashBoard() {
         int hash = 0;
@@ -196,28 +182,27 @@ public class State {
             switch(this.board[i].getCurrentColor())
             {
                 case WDOWN:
-                    hash += 7*(i+1)*1;
-                    break;
-                    
+                    hash += Math.pow(7,i)*1;
+                    break;                    
                 case WUP:
-                    hash += 7*(i+1)*2;
+                    hash += Math.pow(7,i)*2;
                     break;
                     
                 case WLEFT:
-                    hash += 7*(i+1)*3;
+                    hash += Math.pow(7,i)*3;
                     break;
                     
                 case WRIGHT:
-                    hash += 7*(i+1)*4;
+                    hash += Math.pow(7,i)*4;
                     break;
                 case WHITE:
-                    hash += 7*(i+1)*5;
+                    hash += Math.pow(7,i)*5;
                     break;
                 case BLACK:
-                    hash += 7*(i+1)*6;
+                    hash += Math.pow(7,i)*6;
                     break;
                 case EMPTY:
-                    hash += 7*(i+1)*0;
+                    hash += Math.pow(7,i)*0;
                     break;    
                 default:
                     break;
@@ -230,8 +215,7 @@ public class State {
         int hash = this.hashBoard()
                 + applyHorizontalSymmetry(this).hashBoard()
                 + applyVerticalSymmetry(this).hashBoard()
-                + apply180Rotation(this).hashBoard();
-        
+                + applyRotationalSymmetry(this).hashBoard();
         return hash;
     }
     
