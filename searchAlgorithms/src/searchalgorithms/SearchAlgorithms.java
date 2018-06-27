@@ -30,6 +30,7 @@ public class SearchAlgorithms
     private static class Result {
         public int depth = 0;
         public Object node;
+        public Result parent;
         
         public Result (Result result) {
             this.depth = result.depth;
@@ -62,44 +63,54 @@ public class SearchAlgorithms
     
     public static void depthFirst(Problem p)
     {
-        int i=0;
         Stack<Result> stack = new Stack<>();
         Set<Result> visitedNodes = new HashSet<>();
+        
         stack.add(new Result(p.getInitialState()));
         visitedNodes.add(new Result(p.getInitialState()));
+        
         long startTime = System.nanoTime();
+        
+        Result currentResult = null;
+        Object tmpObj = null;
+        Object newState = null;
+        Result newResult = null;
         
         while(!stack.isEmpty() && !p.isResolved(stack.peek().node))
         {
-            i++;
-            Result currentResult = stack.pop();
-            Object tmpObj = currentResult.node;
+            currentResult = stack.pop();
+            tmpObj = currentResult.node;
             List<Rule>rules = p.getRules(tmpObj);
             for (Rule rule : rules)
             {
-                Object newState = rule.applyToState(tmpObj);
-                Result newResult = new Result(newState, currentResult.depth+1);
+                newState = rule.applyToState(tmpObj);
+                newResult = new Result(newState, currentResult.depth+1);
                 if (!visitedNodes.contains(newResult))
                 {
+                    newResult.parent = currentResult;
                     visitedNodes.add(newResult);
-                    
                     stack.push(newResult);
                 }
             }
         }
-        if (p.isResolved(stack.peek().node)) {
+        if (p.isResolved(stack.peek().node)) 
+        {     
+            System.out.println(stack.peek());
             
             long estimatedTime = System.nanoTime() - startTime;
             System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
             
-            System.out.println(stack.peek());
             System.out.println("Profundidad de la solucion : " + stack.peek().depth);
             
-            System.out.println("Nodos expandidos : " + i);
-            
-            int nFrontera = 0;
-            nFrontera = stack.stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
-            System.out.println("Nodos frontera : " + nFrontera);
+            System.out.println("Nodos generados : " + visitedNodes.size());
+            System.out.println("Nodos frontera : " + stack.size());
+            System.out.println("Nodos expandidos : " + (visitedNodes.size() - stack.size()));
+//            Result result = stack.peek();
+//            while (result.parent != null)
+//            {
+//                System.out.println(result);
+//                result = result.parent;
+//            }
         }
             
     }
@@ -111,38 +122,52 @@ public class SearchAlgorithms
         Set<Result> visitedNodes = new HashSet<>();
         queue.add(new Result(p.getInitialState()));
         visitedNodes.add(new Result(p.getInitialState()));
+        
+        Result currentResult = null;
+        Object tmpObj = null;
+        Object newState = null;
+        Result newResult = null;
+                
         long startTime = System.nanoTime();
 
         while(!queue.isEmpty() && !p.isResolved(queue.element().node))
         {   
-            Result currentResult = queue.poll();
-            Object tmpObj = currentResult.node;
-            System.out.println(i);
-            i++;
+            currentResult = queue.poll();
+            tmpObj = currentResult.node;
+            
             List<Rule>rules = p.getRules(tmpObj);
             for (Rule rule : rules) 
             {                
-                Object newState = rule.applyToState(tmpObj);
-                Result newResult = new Result(newState, currentResult.depth+1);
+                newState = rule.applyToState(tmpObj);
+                newResult = new Result(newState, currentResult.depth+1);
                 if (!visitedNodes.contains(newResult))
                 {
                     queue.add(newResult);
                     visitedNodes.add(newResult);
                 }
             }
+        }
+        
+        if (p.isResolved(queue.element()))
+        {
+            System.out.println(queue.element());
+            
             long estimatedTime = System.nanoTime() - startTime;
             System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
             
             System.out.println("Profundidad de la solucion : " + queue.element().depth);
             
-            System.out.println("Nodos expandidos : " + i);
+            System.out.println("Nodos generados : " + visitedNodes.size());
+            System.out.println("Nodos frontera : " + queue.size());
+            System.out.println("Nodos expandidos : " + (visitedNodes.size() - queue.size()));
             
-            int nFrontera = 0;
-            nFrontera = queue.stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
-            System.out.println("Nodos frontera : " + nFrontera);
+//            Result result = queue.element();
+//            while (result.parent != null)
+//            {
+//                System.out.println(result);
+//                result = result.parent;
+//            }
         }
-        if (p.isResolved(queue.element()))
-            System.out.println(queue.element());
     }
     
     public static void greedySearch(Problem p, Heuristic h)

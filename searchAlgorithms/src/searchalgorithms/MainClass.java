@@ -25,7 +25,9 @@ public class MainClass {
         Heuristic h;
 
         if (args.length==0) { 
-            System.out.println("Invalid method");
+            //System.out.println("Invalid method");
+//            SearchAlgorithms.breadthFirst(rc);
+            SearchAlgorithms.depthFirst(rc);
             return;
         } else if (args.length == 1) {
             switch(args[0]) {
