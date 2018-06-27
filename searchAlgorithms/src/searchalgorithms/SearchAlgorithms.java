@@ -225,15 +225,15 @@ public class SearchAlgorithms
                 }
             }
             currentState = min.getKey();
-
+            
+            currentScore = min.getValue();
+            currentCost = min.getValue() - h.getValue(currentState); 
             if (p.isResolved(currentState)) {
                 resolved = true;
                 break;
             }
-            currentScore = min.getValue();
-            currentCost = min.getValue() - h.getValue(currentState); 
             openList.remove(min.getKey());
-            //System.out.println(nExpandidos+ " "+currentScore);
+            //System.out.println(nExpandidos+ " " + h.getValue(currentState) +" "+currentScore);
 
             nExpandidos++;
             List <Rule> rules = p.getRules(currentState);

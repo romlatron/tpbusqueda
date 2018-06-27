@@ -31,8 +31,8 @@ public class MainClass {
         Heuristic h = ImprovedHeuristic.getInstance();
 
         if (args.length==0) { 
-            SearchAlgorithms.depthFirst(rc);
-          // System.out.println(SearchAlgorithms.Astar(rc, h));
+            //SearchAlgorithms.depthFirst(rc);
+           SearchAlgorithms.Astar(rc, h);
           //SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {
             switch(args[0]) {
