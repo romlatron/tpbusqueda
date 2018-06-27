@@ -133,12 +133,15 @@ public class State {
 //        return symmetricNode;
 //    }
     
-    public void applySymmetry(Set<Object> visitedNodes)
+    public List<State> applySymmetry(Set<Object> visitedNodes)
     {
-        visitedNodes.add(this);
-        visitedNodes.add(applyHorizontalSymmetry(this));
-        visitedNodes.add(applyVerticalSymmetry(this));
-        visitedNodes.add(apply180Rotation(this));
+        List<State> returnable = new ArrayList<>();
+        returnable.add(this);
+        returnable.add(applyHorizontalSymmetry(this));
+        returnable.add(applyVerticalSymmetry(this));
+        returnable.add(apply180Rotation(this));
+        
+        return returnable;
     }
 
     public List<Rule> getRules() { return rules; }

@@ -7,7 +7,7 @@ package searchalgorithms;
 
 import RollingCubes.State;
 import ar.com.itba.sia.*;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,10 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 
@@ -33,6 +34,9 @@ public class SearchAlgorithms
     
     private static class Result {
         public int depth = 0;
+        public double heuristicCost = -1;
+        public double cost = 0;
+        public Result parent = null;
         public Object node;
         
         public Result (Result result) {
@@ -43,6 +47,11 @@ public class SearchAlgorithms
         public Result (Object node) {
             this.depth = depth;
             this.node = node;
+        }
+        
+        public Result (Object node, double heuristicCost) {
+            this.node = node;
+            this.heuristicCost = heuristicCost;
         }
         
         public Result (Object node, int depth) {
@@ -64,27 +73,29 @@ public class SearchAlgorithms
         }
     }
      
-    /*
+    
     public static void depthFirst(Problem p)
     {
         int exploded = 0;
         Deque<Result> frontier = new LinkedList<>();
-        Map<Result, Integer> nodeDepths = new HashMap<>();
+        Set<Object> visitedNodes = new HashSet<>();
         long startTime = System.nanoTime();
         frontier.add(new Result(p.getInitialState()));
 
         while(!frontier.isEmpty())
         {   
             Result parentState = frontier.pop();
-            nodeDepths.put(parentState, parentState.depth);
+            visitedNodes.add(parentState);
             exploded++;
             
             List<Rule> rules = p.getRules(parentState.node);
             for (Rule rule : rules) {
                 Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                Integer oldDepth = nodeDepths.get(currentState);
                 
-                if (oldDepth == null || oldDepth > currentState.depth) {
+                if (!visitedNodes.contains(currentState)) {
+                    if(currentState.node instanceof RollingCubes.State) {
+                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
+                    }
                     frontier.push(currentState);
                     if (p.isResolved((currentState.node))) {
                         long estimatedTime = System.nanoTime() - startTime;
@@ -101,63 +112,29 @@ public class SearchAlgorithms
             }
         }
     }
-    */
-    
-    public static void depthFirst(Problem p)
-    {
-        int i=0;
-        Stack<Object> stack = new Stack<>();
-        Set<Object> visitedNodes = new HashSet<>();
-        stack.add(p.getInitialState());
-        visitedNodes.add(p.getInitialState());
-        
-        while(!stack.isEmpty() && !p.isResolved(stack.peek()))
-        {
-            Object tmpObj = stack.pop();
-            //System.out.println(i);
-            //System.out.println(tmpObj);
-            
-            List<Rule>rules = p.getRules(tmpObj);
-            for (Rule rule : rules)
-            {
-                Object currentState = rule.applyToState(tmpObj);
-                
-                if (!visitedNodes.contains(currentState))
-                {
-                    visitedNodes.add(currentState);
-                    
-                    if(currentState instanceof State)
-                        ((State) currentState).applySymmetry(visitedNodes);
-                        
-                    stack.push(currentState);
-                    i++;
-                }
-            }
-        }
-        if (p.isResolved(stack.peek()))
-            System.out.println(stack.peek());
-    }
     
     public static void breadthFirst(Problem p)
     {
         int exploded = 0;
         Queue<Result> frontier = new LinkedList<>();
-        Map<Result, Integer> nodeDepths = new HashMap<>();
+        Set<Object> visitedNodes = new HashSet<>();
         long startTime = System.nanoTime();
         frontier.add(new Result(p.getInitialState()));
 
         while(!frontier.isEmpty())
         {   
             Result parentState = frontier.poll();
-            nodeDepths.put(parentState, parentState.depth);
+            visitedNodes.add(parentState);
             exploded++;
             
             List<Rule> rules = p.getRules(parentState.node);
             for (Rule rule : rules) {
                 Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                Integer oldDepth = nodeDepths.get(currentState);
                 
-                if (oldDepth == null || oldDepth > currentState.depth) {
+                if (!visitedNodes.contains(currentState)) {
+                    if(currentState.node instanceof RollingCubes.State) {
+                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
+                    }
                     frontier.add(currentState);
                     if (p.isResolved((currentState.node))) {
                         long estimatedTime = System.nanoTime() - startTime;
@@ -177,158 +154,97 @@ public class SearchAlgorithms
     
     public static void greedySearch(Problem p, Heuristic h)
     {
-        Object currentState  = p.getInitialState();
-        Object nextState;
-        Rule applyRule;
-        double minScore;
-        boolean visited;
-        HashMap <Object, Object> visitedNodes = new HashMap<>();
-        visitedNodes.put(currentState, null);
-        
-        int i =0;
-        while(!p.isResolved(currentState))  
-        {
-            i++;
-            System.out.print(h.getValue(currentState));
-            System.out.println(i);
-            
-            List<Rule> rules = p.getRules(currentState);
-            applyRule = null;
-            minScore = Double.POSITIVE_INFINITY ;
+        int exploded = 0;
+        PriorityQueue<Result> frontier = new PriorityQueue<>(Comparator.comparingDouble(n -> n.heuristicCost));
+        Set<Object> visitedNodes = new HashSet<>();
+        long startTime = System.nanoTime();
+        frontier.add(new Result(p.getInitialState(), h.getValue(p.getInitialState())));
 
-            for (Rule<Object> rule : rules)
-            {                
-                visited = false;
-                for (Object o : visitedNodes.keySet())
-                    if (o.equals(rule.applyToState(currentState))) visited = true;
-                if (!visited) {
-                    if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore)
-                    {
-                        minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
-                        applyRule = rule;
+        while(!frontier.isEmpty())
+        {   
+            Result parentState = frontier.remove();
+            visitedNodes.add(parentState);
+            exploded++;
+            
+            List<Rule> rules = p.getRules(parentState.node);
+            for (Rule rule : rules) {
+                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
+                currentState.heuristicCost = h.getValue(currentState.node);
+                currentState.cost = parentState.cost + rule.getCost();
+                currentState.parent = parentState;
+                
+                if (!visitedNodes.contains(currentState)) {
+                    if(currentState.node instanceof RollingCubes.State) {
+                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
+                    }
+                    frontier.add(currentState);
+                    if (p.isResolved((currentState.node))) {
+                        long estimatedTime = System.nanoTime() - startTime;
+                        System.out.println(currentState.node);
+                        System.out.println("Nodos frontera: " + frontier.size());
+                        System.out.println("Nodos Explotados: " + exploded);
+                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
+                        System.out.println("Profundidad: " + currentState.depth);
+                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+                        // TODO: Check generated nodes
+                        return;
                     }
                 }
             }
-            if (applyRule != null) {
-                nextState = applyRule.applyToState(currentState);
-                visitedNodes.put(nextState, currentState);
-                currentState = nextState;
-            }
-            else {
-                currentState = visitedNodes.get(currentState);
-            }
         }
-        int profundidad = 0;
-        while (currentState != null) {
-            profundidad++;
-            System.out.println(currentState);
-            currentState = visitedNodes.get(currentState);
-        }
-        System.out.println(i);
-        System.out.println("Profundidad de la solucion : " + profundidad);
-        
-        int nExpandidos = 0;
-        nExpandidos = visitedNodes.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
-        System.out.println("Nodos expandidos : " + nExpandidos);
     }
     
-    public static boolean Astar(Problem p, Heuristic h)
+    public static void Astar(Problem p, Heuristic h)
     {
-        Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
-        HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
-        boolean resolved = false;
-        Object initialState = p.getInitialState();
-        Object currentState = p.getInitialState();
-        Object nextState, existingClosed;    
-        double currentCost, currentScore, nextCost, nextScore;
-        boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
-        openList.put(initialState, h.getValue(initialState));
-        int nExpandidos = 0;
-        int i = 0;
-        
-        while(!openList.isEmpty())
+        int exploded = 0;
+        PriorityQueue<Result> frontier = new PriorityQueue<>(Comparator.comparingDouble(n -> n.heuristicCost + n.cost));
+        Set<Object> visitedNodes = new HashSet<>();
+        long startTime = System.nanoTime();
+        frontier.add(new Result(p.getInitialState(), h.getValue(p.getInitialState())));
+
+        while(!frontier.isEmpty())
         {   
-            i++;
-            Entry<Object, Double> min = null;
-            for (Entry<Object, Double> entry : openList.entrySet()) {
-                if (min == null || min.getValue() > entry.getValue()) {
-                    min = entry;
-                }
-            }
-            currentState = min.getKey();
-            if (p.isResolved(currentState)) {
-                resolved = true;
-                break;
-            }
-            currentScore = min.getValue();
-            currentCost = min.getValue() - h.getValue(currentState); 
-            openList.remove(min.getKey());
-            nExpandidos++;
-            List <Rule> rules = p.getRules(currentState);
+            Result parentState = frontier.remove();
+            visitedNodes.add(parentState);
+            exploded++;
             
+            List<Rule> rules = p.getRules(parentState.node);
             for (Rule rule : rules) {
-            
-                visited = false;
-                waitingList = false;
-                existingClosed = null;
-                nextState = rule.applyToState(currentState);
-                nextCost = currentCost + rule.getCost();
-                nextScore =  nextCost + h.getValue(nextState);
+                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
+                currentState.heuristicCost = h.getValue(currentState.node);
+                currentState.cost = parentState.cost + rule.getCost();
+                currentState.parent = parentState;
                 
-                for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
-                    if (entry.getKey().equals(nextState)) {
-                        existingClosed = entry.getKey();
-                        visited = entry.getValue() <= nextScore;
-                        break;
+                if (!visitedNodes.contains(currentState)) {
+                    if(currentState.node instanceof RollingCubes.State) {
+                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
                     }
-                }
-                
-                if (!visited) {
-                
-                    Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
-                    while (ite.hasNext()) {
-                        Map.Entry<Object, Double> entry = ite.next();
-                        if (entry.getKey().equals(nextState)) {
-                            waitingList = entry.getValue()<= nextScore;
-                            if (!waitingList) ite.remove();
-                            break;
-                        }
-                    }
-
-                    if (!waitingList) {
-                        openList.put(nextState, nextScore);
-                        if (existingClosed != null) closedList.remove(existingClosed);
+                    frontier.add(currentState);
+                    if (p.isResolved((currentState.node))) {
+                        long estimatedTime = System.nanoTime() - startTime;
+                        System.out.println(currentState.node);
+                        System.out.println("Nodos frontera: " + frontier.size());
+                        System.out.println("Nodos Explotados: " + exploded);
+                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
+                        System.out.println("Profundidad: " + currentState.depth);
+                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+                        // TODO: Check generated nodes
+                        return;
                     }
                 }
             }
-
-            closedList.put(currentState, currentScore);
         }
-                
-        int nFrontera = 0;
-        nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
-        System.out.println("Nodos frontera : " + nFrontera);
-        
-        
-//        int nExpandidos = 0;
-//        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
-        System.out.println("Nodos expandidos : " + nExpandidos);
-        
-        System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
-       
-        return resolved;
     }
         
     public static void iterativeDeepening (Problem p) 
     {
         Integer exploded = 0;
         Deque<Result> frontier = new LinkedList<>();
-        Map<Result, Integer> nodeDepths = new HashMap<>();
         long startTime = System.nanoTime();
         frontier.add(new Result(p.getInitialState()));
         
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            Result goal = depthFirstLim(p,12, frontier, nodeDepths);
+        for (int i = 1; i < Integer.MAX_VALUE; i++) {
+            Result goal = depthFirstLim(p,i, frontier);
             if (goal != null) {
                 long estimatedTime = System.nanoTime() - startTime;
                 System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
@@ -338,8 +254,10 @@ public class SearchAlgorithms
     }
     
     //recursive algorithm used by iterative deepening
-    private static Result depthFirstLim (Problem p, int depth, Deque<Result> frontier, Map<Result, Integer> nodeDepths) 
+    private static Result depthFirstLim (Problem p, int depth, Deque<Result> frontier) 
     {   
+        Map<Result, Integer> nodeDepths = new HashMap<>();
+
         int exploded = 0;
         while(!frontier.isEmpty())
         {   
