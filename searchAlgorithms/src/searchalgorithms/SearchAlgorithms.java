@@ -219,9 +219,8 @@ public class SearchAlgorithms
         System.out.println("Nodos frontera : " + (i - nExpandidos));
         
         return currentState;
-    }   
-    
-    
+    }
+       
     private static int iterativeDeepeningStep (int i) {
         return (int) Math.floor(Math.exp(i/2.0) + 1);
     }
