@@ -27,9 +27,9 @@ public class MainClass {
      */
     public static void main(String[] args) 
     {
-        SokobanProblem sp = new SokobanProblem("input4.txt");
+        // SokobanProblem sp = new SokobanProblem("input4.txt");
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.iterativeDeepening(rc);
+        //SearchAlgorithms.iterativeDeepening(rc);
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);
@@ -43,26 +43,37 @@ public class MainClass {
         
 //        SearchAlgorithms.depthFirst(rc);
         
-        /*Heuristic h = ImprovedHeuristic.getInstance();
+        Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 
            // System.out.println(SearchAlgorithms.Astar(rc, h));
             SearchAlgorithms.greedySearch(rc, h);
-        } else if (args.length == 1) {
+        } else if (args.length == 1 || args.length == 2 && args[1].equals("--trace")) {
+            boolean trace = args.length == 2 && args[1].equals("--trace");
+            Result result = null;
             switch(args[0]) {
                 case "DFS" :
-                    SearchAlgorithms.depthFirst(rc);
+                    result = SearchAlgorithms.depthFirst(rc);
                     break;
                 case "BFS" :
-                    SearchAlgorithms.breadthFirst(rc);
+                    result = SearchAlgorithms.breadthFirst(rc);
                     break;
                 case "ID" :
-                    SearchAlgorithms.iterativeDeepening(rc);
+                    result = SearchAlgorithms.iterativeDeepening(rc);
                     break;
                 default :
                     System.out.println("Invalid method");
                     break;
             }
+            if (trace && result != null) {
+                Result it = result;
+                while (it != null) {
+                    System.out.println(it.node);
+                    it = it.parent;
+                }
+            } 
         } else {
+            boolean trace = args.length == 3 && args[2].equals("--trace");
+            Result result = null;
             switch(args[1]) {
                 case "ImproveHeuristic" :
                     h = ImprovedHeuristic.getInstance();
@@ -76,16 +87,24 @@ public class MainClass {
             }
             switch(args[0]) {
                 case "AStar" :
-                    System.out.println(SearchAlgorithms.Astar(rc, h));
+                    result = SearchAlgorithms.Astar(rc, h);
                     break;
                 case "Greedy" :
-                    SearchAlgorithms.greedySearch(rc, h);
+                    result = SearchAlgorithms.greedySearch(rc, h);
                     break;
                 default :
                     System.out.println("Invalid method");
                     break;
             }
+            
+            if (trace && result != null) {
+                Result it = result;
+                while (it != null) {
+                    System.out.println(it.node);
+                    it = it.parent;
+                }
+            } 
                 
-        }*/
+        }
     }    
 }

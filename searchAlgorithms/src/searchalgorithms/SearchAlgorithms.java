@@ -31,50 +31,8 @@ import java.util.stream.Collectors;
  */
 public class SearchAlgorithms
 {
-    
-    private static class Result {
-        public int depth = 0;
-        public double heuristicCost = -1;
-        public double cost = 0;
-        public Result parent = null;
-        public Object node;
-        
-        public Result (Result result) {
-            this.depth = result.depth;
-            this.node = result.node;
-        }
-        
-        public Result (Object node) {
-            this.depth = depth;
-            this.node = node;
-        }
-        
-        public Result (Object node, double heuristicCost) {
-            this.node = node;
-            this.heuristicCost = heuristicCost;
-        }
-        
-        public Result (Object node, int depth) {
-            this.depth = depth;
-            this.node = node;
-        }
-        
-        public boolean equals(Object o) {
-            Result r = (Result) o;
-            return r.node.equals(node);
-        }
-        
-        public String toString() {
-            return node.toString();
-        }
-        
-        public int hashCode() {
-            return node.hashCode();
-        }
-    }
-     
-    
-    public static void depthFirst(Problem p)
+
+    public static Result depthFirst(Problem p)
     {
         int i=0;
         long startTime = System.nanoTime();
@@ -96,6 +54,7 @@ public class SearchAlgorithms
                 if (!visitedNodes.contains(newResult))
                 {
                     visitedNodes.add(newResult);
+                    newResult.parent = currentResult;
                     
                     stack.push(newResult);
                 }
@@ -113,10 +72,12 @@ public class SearchAlgorithms
             System.out.println("Nodos frontera : " + nFrontera);
             System.out.println("Nodos generados : " + (i + nFrontera));
             System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+            return stack.peek();
         }
+        return null;
     }
     
-    public static void breadthFirst(Problem p)
+    public static Result breadthFirst(Problem p)
     {
         int exploded = 0;
         Queue<Result> frontier = new LinkedList<>();
@@ -135,6 +96,8 @@ public class SearchAlgorithms
                 Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
                 
                 if (!visitedNodes.contains(currentState)) {
+                    currentState.parent = parentState;
+
                     if(currentState.node instanceof RollingCubes.State) {
                         visitedNodes.addAll(((State) currentState.node).applySymmetry().stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
                     }
@@ -148,14 +111,15 @@ public class SearchAlgorithms
                         System.out.println("Profundidad: " + currentState.depth);
                         System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
                         // TODO: Check generated nodes
-                        return;
+                        return currentState;
                     }
                 }
             }
         }
+        return null;
     }
     
-    public static void greedySearch(Problem p, Heuristic h)
+    public static Result greedySearch(Problem p, Heuristic h)
     {
         int exploded = 0;
         PriorityQueue<Result> frontier = new PriorityQueue<>(Comparator.comparingDouble(n -> n.heuristicCost));
@@ -190,14 +154,15 @@ public class SearchAlgorithms
                         System.out.println("Profundidad: " + currentState.depth);
                         System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
                         // TODO: Check generated nodes
-                        return;
+                        return currentState;
                     }
                 }
             }
         }
+        return null;
     }
     
-    public static boolean Astar(Problem p, Heuristic h)
+    public static Result Astar(Problem p, Heuristic h)
     {
         HashMap<Object, Double> openList = new HashMap<>(); //waiting list containing state and score
         HashMap<Object, Double> closedList = new HashMap<>(); //list of visited nodes
@@ -265,7 +230,7 @@ public class SearchAlgorithms
         System.out.println("Nodos frontera : " + nFrontera);
         System.out.println("Nodos expandidos : " + nExpandidos);
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
-        return resolved;
+        return (Result) currentState;
     }
     
     
@@ -273,7 +238,7 @@ public class SearchAlgorithms
         return (int) Math.floor(Math.exp(i/2.0) + 1);
     }
         
-    public static void iterativeDeepening (Problem p) 
+    public static Result iterativeDeepening (Problem p) 
     {
         long startTime = System.nanoTime();
         
@@ -282,9 +247,10 @@ public class SearchAlgorithms
             if (goal != null) {
                 long estimatedTime = System.nanoTime() - startTime;
                 System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
-                return;
+                return goal;
             };
         }
+        return null;
     }
     
     //recursive algorithm used by iterative deepening
@@ -307,6 +273,8 @@ public class SearchAlgorithms
                 Integer oldDepth = nodeDepths.get(currentState);
                 
                 if (oldDepth == null || (depth >= 0 && oldDepth > currentState.depth)) {
+                    currentState.parent = parentState;
+
                     if (p.isResolved((currentState.node))) {
                         System.out.println(currentState.node);
                         System.out.println("Nodos Frontera: " + (frontier.size() + 1));
