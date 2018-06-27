@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 
@@ -61,78 +63,75 @@ public class SearchAlgorithms
             return node.hashCode();
         }
     }
-        
     public static void depthFirst(Problem p)
     {
-        int exploded = 0;
-        Deque<Object> frontier = new LinkedList<>();
-        HashSet<Object> visitedNodes = new HashSet<>();
-        long startTime = System.nanoTime();
-        frontier.add(p.getInitialState());
-
-        while(!frontier.isEmpty())
-        {   
-            Object currentState = frontier.pop();
-            exploded++;
-            if (p.isResolved((currentState))) {
-                        long estimatedTime = System.nanoTime() - startTime;
-                        System.out.println(currentState);
-                        System.out.println("Nodos frontera: " + frontier.size());
-                        System.out.println("Nodos Explotados: " + exploded);
-                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
-                        //System.out.println("Profundidad: " + currentState.depth);
-                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
-                        // TODO: Check frontier and exploded
-                        return;
-            }
-            
-            List<Rule> rules = p.getRules(currentState);
-            for (Rule rule : rules) {
-                
-                if (!visitedNodes.contains(rule.applyToState(currentState))) {
-                    frontier.push(rule.applyToState(currentState));                    
+        int i=0;
+        Stack<Result> stack = new Stack<>();
+        Set<Result> visitedNodes = new HashSet<>();
+        stack.add(new Result(p.getInitialState()));
+        visitedNodes.add(new Result(p.getInitialState()));
+        
+        while(!stack.isEmpty() && !p.isResolved(stack.peek().node))
+        {
+            i++;
+            Result currentResult = stack.pop();
+            Object tmpObj = currentResult.node;
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules)
+            {
+                Object newState = rule.applyToState(tmpObj);
+                Result newResult = new Result(newState, currentResult.depth+1);
+                if (!visitedNodes.contains(newResult))
+                {
+                    visitedNodes.add(newResult);
+                    
+                    stack.push(newResult);
                 }
             }
-            visitedNodes.add(currentState);
         }
+        if (p.isResolved(stack.peek().node)) {
+            System.out.println(stack.peek());
+            System.out.println("Profundidad de la solucion : " + stack.peek().depth);
+            
+            System.out.println("Nodos expandidos : " + i);
+            
+            int nFrontera = 0;
+            nFrontera = stack.stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+            System.out.println("Nodos frontera : " + nFrontera);
+        }
+            
     }
-    
     public static void breadthFirst(Problem p)
     {
-        int exploded = 0;
-        Queue<Result> frontier = new LinkedList<>();
-        Map<Result, Integer> nodeDepths = new HashMap<>();
-        long startTime = System.nanoTime();
-        frontier.add(new Result(p.getInitialState()));
-
-        while(!frontier.isEmpty())
+        int i = 0;
+        Queue<Object> queue = new LinkedList<>();
+        Set<Object> visitedNodes = new HashSet<>();
+        queue.add(p.getInitialState());
+        visitedNodes.add(p.getInitialState());
+        
+        while(!queue.isEmpty() && !p.isResolved(queue.element()))
         {   
-            Result parentState = frontier.poll();
-            nodeDepths.put(parentState, parentState.depth);
-            exploded++;
+            Object tmpObj = queue.poll();
+            System.out.println(i);
             
-            List<Rule> rules = p.getRules(parentState.node);
-            for (Rule rule : rules) {
-                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                Integer oldDepth = nodeDepths.get(currentState);
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules) 
+            {
+                Object currentState = rule.applyToState(tmpObj);
                 
-                if (oldDepth == null || oldDepth > currentState.depth) {
-                    frontier.add(currentState);
-                    if (p.isResolved((currentState.node))) {
-                        long estimatedTime = System.nanoTime() - startTime;
-                        System.out.println(currentState.node);
-                        System.out.println("Nodos frontera: " + frontier.size());
-                        System.out.println("Nodos Explotados: " + exploded);
-                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
-                        System.out.println("Profundidad: " + currentState.depth);
-                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
-                        // TODO: Check generated nodes
-                        return;
-                    }
+                if (!visitedNodes.contains(currentState))
+                {
+                    queue.add(currentState);
+                    visitedNodes.add(currentState);
+                    
+                    i++;
                 }
             }
         }
+        if (p.isResolved(queue.element()))
+            System.out.println(queue.element());
     }
+    
     
     public static void greedySearch(Problem p, Heuristic h)
     {
