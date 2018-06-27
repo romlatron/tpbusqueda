@@ -157,9 +157,9 @@ public class State {
         
         State s = (State) object;
         if (s.strictEquals(this)) return true;
-        /*for(State symmetricState: applySymmetry(s)) {
+        for(State symmetricState: applySymmetry(s)) {
             if (symmetricState.strictEquals(this)) return true;
-        }*/
+        }
         return false;
     }
     
@@ -221,10 +221,10 @@ public class State {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 41 * hash + this.hashBoard();/*
+        hash = 41 * hash + this.hashBoard()
                 + applyHorizontalSymmetry(this).hashBoard()
                 + applyVerticalSymmetry(this).hashBoard()
-                + applyRotationalSymmetry(this).hashBoard();*/
+                + applyRotationalSymmetry(this).hashBoard();
         return hash;
     }
     

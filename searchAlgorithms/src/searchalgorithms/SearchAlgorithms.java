@@ -144,12 +144,10 @@ public class SearchAlgorithms
         HashMap <Object, Object> visitedNodes = new HashMap<>();        
         visitedNodes.put(currentState, null);
         int i =0;
-        
+        long startTime = System.nanoTime();
+
         while(!p.isResolved(currentState))  
         {
-            i++;
-            //System.out.print(h.getValue(currentState));
-            //System.out.println(i);
             
             List<Rule> rules = p.getRules(currentState);
             applyRule = null;
@@ -157,16 +155,8 @@ public class SearchAlgorithms
 
             for (Rule<Object> rule : rules)
             {                
-                visited = false;
-                if (visitedNodes.keySet().contains(rule.applyToState(currentState)))
-                    visited = true;
-                /*for (Object o : visitedNodes.keySet())
-                    if (o.equals(rule.applyToState(currentState))){
-                        visited = true;
-                        break;
-                    }
-                */
-                if (!visited) {
+                if (!visitedNodes.keySet().contains(rule.applyToState(currentState))) {   
+                    i++;
                     if (rule.getCost() + h.getValue(rule.applyToState(currentState)) < minScore){
                         minScore = rule.getCost()+ h.getValue(rule.applyToState(currentState));
                         applyRule = rule;
@@ -176,9 +166,6 @@ public class SearchAlgorithms
             if (applyRule != null) {
                 nextState = applyRule.applyToState(currentState);
                 visitedNodes.put(nextState, currentState);
-               // visitedNodes.put(((State)(nextState)).applyHorizontalSymmetry((State)nextState), null);
-               // visitedNodes.put(((State)(nextState)).applyVerticalSymmetry((State)nextState), null);
-               // visitedNodes.put(((State)(nextState)).applyRotationalSymmetry((State)nextState), null);
                 
                 currentState = nextState;                
             }
@@ -186,37 +173,39 @@ public class SearchAlgorithms
                 currentState = visitedNodes.get(currentState);
             }
         }
+        long estimatedTime = System.nanoTime() - startTime;
+        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+        
         int profundidad = 0;
         while (currentState != null) {
             profundidad++;
             //System.out.println(currentState);
             currentState = visitedNodes.get(currentState);
         }
-        System.out.println(i);
         System.out.println("Profundidad de la solucion : " + profundidad);
         
         int nExpandidos = 0;
         nExpandidos = visitedNodes.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
         System.out.println("Nodos expandidos : " + nExpandidos);
+        
+        System.out.println("Nodos frontera : " + (i - nExpandidos));
     }
     
     public static boolean Astar(Problem p, Heuristic h)
     {
-        Map<Object, Double> openList = new LinkedHashMap<>(); //waiting list containing state and score
-        HashMap<Object, Double> closedList = new LinkedHashMap<>(); //list of visited nodes
+        HashMap<Object, Double> openList = new HashMap<>(); //waiting list containing state and score
+        HashMap<Object, Double> closedList = new HashMap<>(); //list of visited nodes
         boolean resolved = false;
         Object initialState = p.getInitialState();
         Object currentState = null;
         Object nextState, existingClosed;    
-        double currentCost, currentScore, nextCost, nextScore;
+        double currentCost, currentScore = 0, nextCost, nextScore;
         boolean visited, waitingList; //to check if the new state is already in one list with a smaller score
         openList.put(initialState, h.getValue(initialState));
         int nExpandidos = 0;
-        int i = 0;
         
         while(!openList.isEmpty())
         {   
-            i++;
             Entry<Object, Double> min = null;
             for (Entry<Object, Double> entry : openList.entrySet()) { //we select the node with smallest score in the waiting list
                 if (min == null || min.getValue() > entry.getValue()) {
@@ -232,6 +221,7 @@ public class SearchAlgorithms
             currentScore = min.getValue();
             currentCost = min.getValue() - h.getValue(currentState); 
             openList.remove(min.getKey());
+            //System.out.println(nExpandidos+ " "+currentScore);
 
             nExpandidos++;
             List <Rule> rules = p.getRules(currentState);
@@ -245,29 +235,14 @@ public class SearchAlgorithms
                 nextCost = currentCost + rule.getCost();
                 nextScore =  nextCost + h.getValue(nextState);
                 
-                for (Map.Entry<Object, Double> entry : closedList.entrySet()) { //check that the node hasn't been visited yet or with bigger score
-                    if (entry.getKey().equals(nextState)) {
-                        existingClosed = entry.getKey(); //in case it has been visited with a higher score, we will have to replace it
-                        visited = entry.getValue() <= nextScore;
-                        break;
-                    }
-                }
-                
+                if (closedList.get(nextState) != null)
+                    visited = closedList.get(nextState) <= nextScore;
                 if (!visited) { // check that the node isn't already in the waiting list with lower score
-                
-                    Iterator<Map.Entry<Object, Double>> ite = openList.entrySet().iterator();
-                    while (ite.hasNext()) {
-                        Map.Entry<Object, Double> entry = ite.next();
-                        if (entry.getKey().equals(nextState) 
-                                || entry.getKey().equals(((State)(nextState)).applyHorizontalSymmetry((State)nextState))
-                                ||entry.getKey().equals(((State)(nextState)).applyRotationalSymmetry((State)nextState))
-                                ||entry.getKey().equals(((State)(nextState)).applyVerticalSymmetry((State)nextState))) {
-                            waitingList = entry.getValue()<= nextScore;
-                            if (!waitingList) ite.remove();
-                            break;
-                        }
+                    if (openList.get(nextState) != null){
+                        waitingList = openList.get(nextState) <= nextScore;
+                        if (!waitingList) openList.remove(nextState);
                     }
-
+                
                     if (!waitingList) {
                         openList.put(nextState, nextScore);
                         if (existingClosed != null) closedList.remove(existingClosed);
@@ -275,19 +250,14 @@ public class SearchAlgorithms
                 }
             }
             closedList.put(currentState, currentScore);
-            closedList.put(((State)(currentState)).applyHorizontalSymmetry((State)currentState), currentScore);
-            closedList.put(((State)(currentState)).applyVerticalSymmetry((State)currentState), currentScore);
-            closedList.put(((State)(currentState)).applyRotationalSymmetry((State)currentState), currentScore);
         }
                 
         int nFrontera = 0;
         nFrontera = openList.entrySet().stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+        System.out.println("Profundidad : " + currentScore);
+        
         System.out.println("Nodos frontera : " + nFrontera);
         
-        
-//        int nExpandidos = 0;
-//        nExpandidos = openList.entrySet().stream().map((_item) -> 1).reduce(nExpandidos, Integer::sum);
-
         System.out.println("Nodos expandidos : " + nExpandidos);
         
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
