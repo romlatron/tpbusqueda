@@ -28,10 +28,10 @@ public class MainClass {
         RollingCubes rc = new RollingCubes();
 //        SearchAlgorithms.depthFirst(rc);
         
-        Heuristic h = ImprovedHeuristic.getInstance();
+        Heuristic h = ColorCubesHeuristic.getInstance();
 
         if (args.length==0) { 
-            //SearchAlgorithms.depthFirst(rc);
+           // SearchAlgorithms.depthFirst(rc);
            SearchAlgorithms.Astar(rc, h);
           //SearchAlgorithms.greedySearch(rc, h);
         } else if (args.length == 1) {

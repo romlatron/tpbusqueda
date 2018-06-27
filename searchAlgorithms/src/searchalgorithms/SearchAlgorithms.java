@@ -224,8 +224,7 @@ public class SearchAlgorithms
                     min = entry;
                 }
             }
-            currentState = min.getKey();
-            
+            currentState = min.getKey();           
             currentScore = min.getValue();
             currentCost = min.getValue() - h.getValue(currentState); 
             if (p.isResolved(currentState)) {
