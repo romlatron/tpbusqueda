@@ -29,19 +29,6 @@ public class MainClass {
     {
         SokobanProblem sp = new SokobanProblem("input4.txt");
         RollingCubes rc = new RollingCubes();
-        //SearchAlgorithms.iterativeDeepening(rc);
-//        State root = (State)rc.getInitialState();
-//        Rule rule = root.getRules().get(0);
-//        State firstState = (State) rule.applyToState(root);
-//        State symmetricState =
-        
-//        List<Object> symmetrics = new ArrayList<>();
-//        firstState.applySymmetry(symmetrics);
-//        System.out.println("1st state \n"+ firstState);
-//        System.out.println("90 clock \n" + firstState.apply90ClockwiseRotation(firstState));
-//        System.out.println("1st state \n"+ firstState);
-        
-//        SearchAlgorithms.depthFirst(rc);
         
         Heuristic h = ImprovedHeuristic.getInstance();
         if (args.length==0) { 

@@ -5,12 +5,18 @@ Este repositorio contiene el informe, la presentación, el binario ejecutable y 
 
 Para ejecutar el programa se debe clonar el repositorio y correr el siguiente comando:
 ```sh
-java -jar grupo12.jar [method] [?heuristic]
+java -jar grupo12.jar [method] [?heuristic] [?--trace]
 ```
-Donde `method` puede ser `DFS`, `BFS`, `ID`, `AStar` o `Greedy`. Por otro lado `heuristic` es solo obligatorio para los últimos 2 métodos y puede ser uno de los siguientes valores: `ImproveHeuristic` y `ColorCubesHeuristic`.
+Donde `method` puede ser `DFS`, `BFS`, `ID`, `AStar` o `Greedy`. Por otro lado `heuristic` es solo obligatorio para los últimos 2 métodos y puede ser uno de los siguientes valores: `ImproveHeuristic` y `ColorCubesHeuristic`. Finalmente, un flag `--trace` puede ser agregado para imprimir los estados que llevan del estado inicial al ganador.
 
-Así finalmente un ejemplo de la ejecución del programa sería
+Así finalmente algunos ejemplos de la ejecución del programa serían
 
+Ejemplo Greedy con ImproveHeuristic
 ```sh
 java -jar grupo12.jar Greedy ImproveHeuristic
+```
+
+Ejemplo IDDFS con impresión de estados intermedios
+```sh
+java -jar grupo12.jar ID --trace
 ```
