@@ -62,7 +62,7 @@ public class SearchAlgorithms
         }
         if (p.isResolved(stack.peek().node)) {
             System.out.println(stack.peek());
-            System.out.println("Profundidad de la solucion : " + stack.peek().depth);
+            System.out.println("Profundidad: " + stack.peek().depth);
             
             System.out.println("Nodos expandidos : " + i);
             long estimatedTime = System.nanoTime() - startTime;
