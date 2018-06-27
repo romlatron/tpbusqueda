@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -76,41 +77,47 @@ public class SearchAlgorithms
     
     public static void depthFirst(Problem p)
     {
-        int exploded = 0;
-        Deque<Result> frontier = new LinkedList<>();
-        Set<Object> visitedNodes = new HashSet<>();
+        int i=0;
         long startTime = System.nanoTime();
-        frontier.add(new Result(p.getInitialState()));
-
-        while(!frontier.isEmpty())
-        {   
-            Result parentState = frontier.pop();
-            visitedNodes.add(parentState);
-            exploded++;
-            
-            List<Rule> rules = p.getRules(parentState.node);
-            for (Rule rule : rules) {
-                Result currentState = new Result(rule.applyToState(parentState.node), parentState.depth + 1);
-                
-                if (!visitedNodes.contains(currentState)) {
-                    if(currentState.node instanceof RollingCubes.State) {
-                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
-                    }
-                    frontier.push(currentState);
-                    if (p.isResolved((currentState.node))) {
-                        long estimatedTime = System.nanoTime() - startTime;
-                        System.out.println(currentState.node);
-                        System.out.println("Nodos frontera: " + frontier.size());
-                        System.out.println("Nodos Explotados: " + exploded);
-                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
-                        System.out.println("Profundidad: " + currentState.depth);
-                        System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
-                        // TODO: Check frontier and exploded
-                        return;
-                    }
+        Stack<Result> stack = new Stack<>();
+        Set<Result> visitedNodes = new HashSet<>();
+        stack.add(new Result(p.getInitialState()));
+        visitedNodes.add(new Result(p.getInitialState()));
+        
+        while(!stack.isEmpty() && !p.isResolved(stack.peek().node))
+        {
+            i++;
+            Result currentResult = stack.pop();
+            Object tmpObj = currentResult.node;
+            List<Rule>rules = p.getRules(tmpObj);
+            for (Rule rule : rules)
+            {
+                Object newState = rule.applyToState(tmpObj);
+                Result newResult = new Result(newState, currentResult.depth+1);
+                if (!visitedNodes.contains(newResult))
+                {
+                    visitedNodes.add(newResult);
+                    
+                    stack.push(newResult);
                 }
             }
         }
+        if (p.isResolved(stack.peek().node)) {
+            System.out.println(stack.peek());
+            System.out.println("Profundidad de la solucion : " + stack.peek().depth);
+            
+            System.out.println("Nodos expandidos : " + i);
+            long estimatedTime = System.nanoTime() - startTime;
+
+            int nFrontera = 0;
+            nFrontera = stack.stream().map((_item) -> 1).reduce(nFrontera, Integer::sum);
+            System.out.println("Nodos frontera : " + nFrontera);
+            System.out.println("Nodos generados : " + (i + nFrontera));
+            System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+
+
+        }
+            
     }
     
     public static void breadthFirst(Problem p)
@@ -133,7 +140,7 @@ public class SearchAlgorithms
                 
                 if (!visitedNodes.contains(currentState)) {
                     if(currentState.node instanceof RollingCubes.State) {
-                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
+                        visitedNodes.addAll(((State) currentState.node).applySymmetry().stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
                     }
                     frontier.add(currentState);
                     if (p.isResolved((currentState.node))) {
@@ -175,7 +182,7 @@ public class SearchAlgorithms
                 
                 if (!visitedNodes.contains(currentState)) {
                     if(currentState.node instanceof RollingCubes.State) {
-                        visitedNodes.addAll(((State) currentState.node).applySymmetry(visitedNodes).stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
+                        visitedNodes.addAll(((State) currentState.node).applySymmetry().stream().map(s -> new Result(s, currentState.depth)).collect(Collectors.toList()));
                     }
                     frontier.add(currentState);
                     if (p.isResolved((currentState.node))) {
