@@ -29,7 +29,7 @@ public class MainClass {
     {
         SokobanProblem sp = new SokobanProblem("input4.txt");
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.Astar(sp, new SokobanPlacedBoxesHeuristic());
+        SearchAlgorithms.iterativeDeepening(rc);
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);

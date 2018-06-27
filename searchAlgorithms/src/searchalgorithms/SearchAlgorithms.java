@@ -11,8 +11,6 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +19,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -268,14 +267,18 @@ public class SearchAlgorithms
         System.out.println("Nodos generados en total : " + (nExpandidos + nFrontera));
         return resolved;
     }
+    
+    
+    private static int iterativeDeepeningStep (int i) {
+        return (int) Math.floor(Math.exp(i/2.0) + 1);
+    }
         
     public static void iterativeDeepening (Problem p) 
     {
-        
         long startTime = System.nanoTime();
         
         for (int i = 1; i < Integer.MAX_VALUE; i++) {
-            Result goal = depthFirstLim(p,i);
+            Result goal = depthFirstLim(p,iterativeDeepeningStep(i));
             if (goal != null) {
                 long estimatedTime = System.nanoTime() - startTime;
                 System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toMillis(estimatedTime));
@@ -308,9 +311,9 @@ public class SearchAlgorithms
                         System.out.println(currentState.node);
                         System.out.println("Nodos Frontera: " + (frontier.size() + 1));
                         System.out.println("Nodos Explotados: " + exploded);
-                        System.out.println("Nodos Generados: " + (frontier.size() + exploded));
                         System.out.println("Profundidad: " + currentState.depth);
                         // TODO: Check generated (It only counts last tree)
+
                         return currentState;
                     }
                     if (depth < 0 || currentState.depth < depth) {
