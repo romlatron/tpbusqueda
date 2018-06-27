@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import sokoban.SokobanProblem;
 import sokoban.SokobanDistanceHeuristic;
+import sokoban.SokobanPlacedBoxesHeuristic;
 
 /**
  *
@@ -28,7 +29,7 @@ public class MainClass {
     {
         SokobanProblem sp = new SokobanProblem("input4.txt");
         RollingCubes rc = new RollingCubes();
-        SearchAlgorithms.depthFirst(rc);
+        SearchAlgorithms.Astar(sp, new SokobanPlacedBoxesHeuristic());
 //        State root = (State)rc.getInitialState();
 //        Rule rule = root.getRules().get(0);
 //        State firstState = (State) rule.applyToState(root);
